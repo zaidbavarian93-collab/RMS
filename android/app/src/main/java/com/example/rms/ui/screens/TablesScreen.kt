@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -66,8 +67,10 @@ fun TablesScreen(viewModel: CaptainViewModel) {
     var floorId by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 title = {
                     Column {
                         Text("الطاولات", fontWeight = FontWeight.Bold)
@@ -149,7 +152,7 @@ private fun TableCard(t: DiningTable, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = bg, contentColor = TextPrimary),
+        colors = CardDefaults.cardColors(containerColor = bg.copy(alpha = 0.72f), contentColor = TextPrimary),
         border = BorderStroke(2.dp, if (t.needsAttention) StatusDanger else border),
         modifier = Modifier.fillMaxWidth()
     ) {

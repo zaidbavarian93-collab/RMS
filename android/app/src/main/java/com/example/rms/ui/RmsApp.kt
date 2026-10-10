@@ -1,5 +1,7 @@
 package com.example.rms.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -30,6 +34,8 @@ import com.example.rms.ui.screens.ChangePasswordScreen
 import com.example.rms.ui.screens.LoginScreen
 import com.example.rms.ui.screens.OrderScreen
 import com.example.rms.ui.screens.TablesScreen
+import com.example.rms.ui.theme.GlassTopDark
+import com.example.rms.ui.theme.GlassTopLight
 import com.example.rms.ui.viewmodel.CaptainViewModel
 
 @Composable
@@ -48,7 +54,11 @@ fun RmsApp(viewModel: CaptainViewModel) {
             }
         }
 
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        val gradient = if (isSystemInDarkTheme()) GlassTopDark else GlassTopLight
+        Surface(
+            modifier = Modifier.fillMaxSize().background(Brush.linearGradient(gradient)),
+            color = Color.Transparent
+        ) {
             Box(Modifier.fillMaxSize()) {
                 val u = user
                 when {

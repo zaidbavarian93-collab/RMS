@@ -62,7 +62,7 @@
 ## التقنيات
 
 - **Backend**: Node.js + Express + Sequelize + PostgreSQL + JWT
-- **Frontend**: React + Vite + React Router (واجهة عربية RTL، الكابتن مصمم للموبايل أولًا)
+- **Frontend**: React + Vite + React Router (واجهة عربية RTL بتصميم زجاجي Glassmorphism، الكابتن مصمم للموبايل أولًا)
 - التحديث الحي للمطبخ والكابتن بالاستعلام الدوري كل 4–5 ثوانٍ (بدون WebSocket لتبسيط النشر)
 
 ## التشغيل محليًا

@@ -41,3 +41,9 @@ val TableReserved = Color(0xFFEFF4FF)
 val TableReservedBorder = Color(0xFF93B4F0)
 val TableCleaning = Color(0xFFF4F1EC)
 val TableCleaningBorder = Color(0xFFCFC7BB)
+
+// ===== الواجهة الزجاجية: أسطح شفافة فوق خلفية متدرجة =====
+val GlassLight = Color(0xB8FFFFFF)   // أبيض بشفافية ~72%
+val GlassDark = Color(0x33FFFFFF) // أبيض بشفافية ~20% فوق الخلفية الداكنة
+val GlassTopLight = listOf(Color(0xFFFF9A5A), Color(0xFFFF6A88), Color(0xFF9B6BFF), Color(0xFF2BBFA4))
+val GlassTopDark = listOf(Color(0xFF3A1D0C), Color(0xFF4A1530), Color(0xFF2A1B5C), Color(0xFF0B3B3A))
