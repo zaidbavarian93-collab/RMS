@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontFamily
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
@@ -36,6 +37,26 @@ private val LightColorScheme = lightColorScheme(
     outline = LightBorder
 )
 
+// خط بنمط Times New Roman: أندرويد لا يحوي Times New Roman، فنستخدم الخط المذيّل (Serif) للنظام
+private val base = Typography()
+private val SerifTypography = Typography(
+    displayLarge = base.displayLarge.copy(fontFamily = FontFamily.Serif),
+    displayMedium = base.displayMedium.copy(fontFamily = FontFamily.Serif),
+    displaySmall = base.displaySmall.copy(fontFamily = FontFamily.Serif),
+    headlineLarge = base.headlineLarge.copy(fontFamily = FontFamily.Serif),
+    headlineMedium = base.headlineMedium.copy(fontFamily = FontFamily.Serif),
+    headlineSmall = base.headlineSmall.copy(fontFamily = FontFamily.Serif),
+    titleLarge = base.titleLarge.copy(fontFamily = FontFamily.Serif),
+    titleMedium = base.titleMedium.copy(fontFamily = FontFamily.Serif),
+    titleSmall = base.titleSmall.copy(fontFamily = FontFamily.Serif),
+    bodyLarge = base.bodyLarge.copy(fontFamily = FontFamily.Serif),
+    bodyMedium = base.bodyMedium.copy(fontFamily = FontFamily.Serif),
+    bodySmall = base.bodySmall.copy(fontFamily = FontFamily.Serif),
+    labelLarge = base.labelLarge.copy(fontFamily = FontFamily.Serif),
+    labelMedium = base.labelMedium.copy(fontFamily = FontFamily.Serif),
+    labelSmall = base.labelSmall.copy(fontFamily = FontFamily.Serif)
+)
+
 @Composable
 fun RmsTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
@@ -47,5 +68,5 @@ fun RmsTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable ()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
-    MaterialTheme(colorScheme = colorScheme, typography = Typography(), content = content)
+    MaterialTheme(colorScheme = colorScheme, typography = SerifTypography, content = content)
 }

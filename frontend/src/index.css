@@ -7,7 +7,8 @@
 /* ---------- الرموز (Tokens) ---------- */
 :root {
   color-scheme: light;
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Arabic", "Segoe UI Variable", "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
+  /* خط Times New Roman في كل الواجهة (Liberation Serif بديل مطابق القياسات على Linux) */
+  --font: "Times New Roman", Times, "Liberation Serif", "Noto Naskh Arabic", serif;
 
   /* ألوان نظام Apple */
   --accent: #ff9500;
@@ -65,7 +66,7 @@ html[data-theme='dark'] {
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
-  font-family: var(--font); font-size: 15px; line-height: 1.45; color: var(--text);
+  font-family: var(--font); font-size: 16px; line-height: 1.45; color: var(--text);
   background: var(--wall); min-height: 100vh;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
 }
