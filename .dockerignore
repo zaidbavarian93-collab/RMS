@@ -1,0 +1,8 @@
+**/node_modules
+**/dist
+**/.env
+backend/uploads
+android
+deploy/local/caddy-data
+deploy/local/caddy-config
+.git

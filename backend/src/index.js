@@ -9,6 +9,9 @@ const { purgeOldKeys } = require('./middleware/idempotency');
 const { sequelize } = require('./models');
 
 const app = express();
+// خلف Caddy/Nginx: نثق بعنوان العميل في X-Forwarded-For القادم من الشبكة المحلية فقط،
+// حتى يعمل تحديد المعدل في المسارات العامة لكل زبون على حدة بدل اعتبار الجميع عنوانًا واحدًا
+app.set('trust proxy', process.env.TRUST_PROXY || 'loopback, linklocal, uniquelocal');
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));

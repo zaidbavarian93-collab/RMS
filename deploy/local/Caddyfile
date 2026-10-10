@@ -1,0 +1,49 @@
+# =====================================================================
+# Caddy للخادم المحلي في المطعم — HTTPS على شبكة Wi-Fi بدون إنترنت
+#
+# لماذا؟ المتصفحات لا تفعّل العمل بدون اتصال (Service Worker) ولا تثبيت التطبيق إلا على HTTPS.
+# Caddy يصدر شهادة من "مرجع شهادات محلي" خاص بالمطعم (لا يحتاج إنترنت ولا دومين)،
+# وكل جهاز يثبّت شهادة هذا المرجع مرة واحدة من صفحة الإعداد: http://<RMS_HOST>/
+#
+# المتغيرات:
+#   RMS_HOST      عنوان IP الثابت لجهاز الخادم على الشبكة (مثل 192.168.1.10) — مطلوب
+#   RMS_UPSTREAM  عنوان خادم RMS (افتراضي localhost:4000؛ في Docker: app:4000)
+#   RMS_CA_DIR    مجلد شهادة المرجع داخل بيانات Caddy (افتراضي مسار صورة Docker)
+#   RMS_SETUP_DIR مجلد صفحة الإعداد (هذا المجلد)
+# =====================================================================
+{
+	# شهادات من المرجع المحلي فقط — لا Let's Encrypt (لا يوجد دومين عام ولا إنترنت)
+	local_certs
+	# لا يحاول تثبيت المرجع في مخزن النظام؛ نوزّعه على الأجهزة من صفحة الإعداد
+	skip_install_trust
+	# التحويل من HTTP إلى HTTPS نعرّفه بأنفسنا أدناه حتى تبقى صفحة الإعداد متاحة عبر HTTP
+	auto_https disable_redirects
+}
+
+# ---------- النظام عبر HTTPS ----------
+https://{$RMS_HOST}, https://localhost {
+	tls internal
+	encode zstd gzip
+	reverse_proxy {$RMS_UPSTREAM:localhost:4000}
+}
+
+# ---------- HTTP: صفحة الإعداد وتنزيل الشهادة، وكل ما عداها يتحول إلى HTTPS ----------
+http://{$RMS_HOST}, http://localhost {
+	handle /rms-ca.crt {
+		root * {$RMS_CA_DIR:/data/caddy/pki/authorities/local}
+		rewrite * /root.crt
+		header Content-Type application/x-x509-ca-cert
+		header Content-Disposition "attachment; filename=\"RMS-Local-CA.crt\""
+		header Cache-Control no-store
+		file_server
+	}
+	handle / {
+		root * {$RMS_SETUP_DIR:/srv/setup}
+		rewrite * /setup.html
+		header Cache-Control no-store
+		file_server
+	}
+	handle {
+		redir https://{host}{uri} 308
+	}
+}
