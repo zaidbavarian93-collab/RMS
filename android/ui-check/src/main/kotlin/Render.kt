@@ -50,10 +50,10 @@ fun main() {
     waitFor("password") { vm.user.value?.mustChangePassword == false }
 
     runBlocking { vm.tick() }
-    waitFor("branch brand") { vm.brand.value.logoUrl != null }
+    waitFor("tables") { vm.tableMap.value != null }
     settle(1500); shot("03-tables-brand")
-    val t4 = vm.tableMap.value!!.tables.first { it.number == "4" }
-    vm.openTable(t4.id); runBlocking { vm.tick() }
+    val t1 = vm.tableMap.value!!.tables.first { it.number == "1" }
+    vm.openTable(t1.id); runBlocking { vm.tick() }
     settle(1200); shot("04-order")
     println("✅ done")
     scene.close()

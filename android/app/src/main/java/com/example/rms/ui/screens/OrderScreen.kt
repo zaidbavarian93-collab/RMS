@@ -4,6 +4,7 @@ package com.example.rms.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,7 +44,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -71,7 +67,10 @@ import com.example.rms.data.model.MenuItem
 import com.example.rms.data.model.Order
 import com.example.rms.data.model.OrderItem
 import com.example.rms.data.model.minutesSince
+import com.example.rms.ui.components.GlassCard
+import com.example.rms.ui.components.LiquidButton
 import com.example.rms.ui.components.MutedText
+import com.example.rms.ui.components.liquidGlass
 import com.example.rms.ui.components.StatusChip
 import com.example.rms.ui.components.callKindLabel
 import com.example.rms.ui.components.itemStatusColors
@@ -119,6 +118,7 @@ fun OrderScreen(viewModel: CaptainViewModel) {
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                modifier = Modifier.liquidGlass(RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp), dark = isSystemInDarkTheme()),
                 navigationIcon = {
                     IconButton(onClick = { viewModel.closeTable() }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع") }
                 },
@@ -153,26 +153,26 @@ fun OrderScreen(viewModel: CaptainViewModel) {
         ) {
             if (table.calls.isNotEmpty()) {
                 item {
-                    Card(colors = CardDefaults.cardColors(containerColor = StatusWarningBg)) {
+                    GlassCard(tint = StatusWarningBg, rim = StatusWarning.copy(alpha = .5f)) {
                         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 "🔔 الزبون ينادي: " + table.calls.joinToString("، ") { callKindLabel(it.kind) },
                                 color = StatusWarning, modifier = Modifier.weight(1f)
                             )
-                            Button(onClick = { viewModel.resolveCalls(table.id) }) { Text("تمت التلبية") }
+                            LiquidButton(onClick = { viewModel.resolveCalls(table.id) }) { Text("تمت التلبية") }
                         }
                     }
                 }
             }
             if (order == null && orderLoaded && (table.status == "cleaning" || table.status == "reserved")) {
                 item {
-                    Card(colors = CardDefaults.cardColors(containerColor = StatusInfoBg)) {
+                    GlassCard(tint = StatusInfoBg, rim = StatusInfo.copy(alpha = .4f)) {
                         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 if (table.status == "cleaning") "الطاولة قيد التنظيف" else "الطاولة محجوزة",
                                 color = StatusInfo, modifier = Modifier.weight(1f)
                             )
-                            Button(onClick = { viewModel.freeTable(table.id) }) { Text("تحويلها إلى فارغة") }
+                            LiquidButton(onClick = { viewModel.freeTable(table.id) }) { Text("تحويلها إلى فارغة") }
                         }
                     }
                 }
@@ -257,8 +257,8 @@ private fun OrderCard(
     onReopen: () -> Unit,
     onTransfer: () -> Unit
 ) {
-    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text("الطلب الحالي", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             val live = order?.liveItems.orEmpty()
             when {
@@ -284,7 +284,7 @@ private fun OrderCard(
                         if (billing) {
                             OutlinedButton(onClick = onReopen) { Text("إعادة فتح الطلب") }
                         } else {
-                            Button(onClick = onRequestBill) { Text("🧾 طلب الفاتورة") }
+                            LiquidButton(onClick = onRequestBill) { Text("🧾 طلب الفاتورة") }
                             FilledTonalButton(onClick = onTransfer) {
                                 Icon(Icons.Default.SwapHoriz, contentDescription = null, Modifier.size(18.dp))
                                 Text(" نقل")
@@ -345,9 +345,11 @@ private fun TotalRow(label: String, value: Double, bold: Boolean = false) {
 @Composable
 private fun MenuRow(item: MenuItem, onClick: () -> Unit) {
     val alpha = if (item.isAvailable) 1f else 0.45f
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        modifier = Modifier.fillMaxWidth().clickable(enabled = item.isAvailable, onClick = onClick)
+    GlassCard(
+        shape = RoundedCornerShape(18.dp),
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        enabled = item.isAvailable
     ) {
         Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -375,8 +377,16 @@ private fun CartBar(
     onClear: () -> Unit,
     onSend: () -> Unit
 ) {
-    Surface(tonalElevation = 8.dp, shadowElevation = 8.dp, modifier = Modifier.navigationBarsPadding().imePadding()) {
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    // سلة الإرسال: لوح زجاجي سائل يطفو أسفل الشاشة
+    Column(
+        Modifier
+            .navigationBarsPadding()
+            .imePadding()
+            .liquidGlass(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), dark = isSystemInDarkTheme(), strength = 1.35f)
+            .padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        run {
             Column(Modifier.heightIn(max = 220.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 cart.forEach { line ->
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -406,7 +416,7 @@ private fun CartBar(
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = onSend, modifier = Modifier.weight(1f)) {
+                LiquidButton(onClick = onSend, modifier = Modifier.weight(1f)) {
                     Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, Modifier.size(18.dp))
                     Text(" إرسال للمطبخ (${money(cart.sumOf { it.lineTotal })})")
                 }
@@ -435,7 +445,8 @@ private fun OptionsDialog(item: MenuItem, onDismiss: () -> Unit, onConfirm: (Lis
                 }
             }
         },
-        confirmButton = { Button(onClick = { onConfirm(item.options.filter { it.name in chosen }) }) { Text("إضافة") } },
+        confirmButton = { LiquidButton(onClick = { onConfirm(item.options.filter { it.name in chosen }) }) { Text("إضافة") } },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         dismissButton = { TextButton(onClick = onDismiss) { Text("إلغاء") } }
     )
 }
@@ -450,12 +461,9 @@ private fun CancelDialog(itemName: String, onDismiss: () -> Unit, onConfirm: (St
             OutlinedTextField(value = reason, onValueChange = { reason = it }, label = { Text("سبب الإلغاء (مطلوب)") }, singleLine = true)
         },
         confirmButton = {
-            Button(
-                onClick = { onConfirm(reason) },
-                enabled = reason.isNotBlank(),
-                colors = ButtonDefaults.buttonColors(containerColor = StatusDanger)
-            ) { Text("تأكيد الإلغاء") }
+            LiquidButton(onClick = { onConfirm(reason) }, enabled = reason.isNotBlank(), danger = true) { Text("تأكيد الإلغاء") }
         },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         dismissButton = { TextButton(onClick = onDismiss) { Text("رجوع") } }
     )
 }
@@ -481,6 +489,7 @@ private fun TransferDialog(tables: List<DiningTable>, onDismiss: () -> Unit, onP
             }
         },
         confirmButton = {},
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         dismissButton = { TextButton(onClick = onDismiss) { Text("إغلاق") } }
     )
 }

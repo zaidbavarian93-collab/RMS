@@ -1,21 +1,19 @@
 package com.example.rms.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -28,7 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -36,8 +34,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.rms.ui.components.BrandLogo
-import com.example.rms.ui.theme.AmberPrimary
-import com.example.rms.ui.theme.BrownDeep
+import com.example.rms.ui.components.GlassCard
+import com.example.rms.ui.components.LiquidButton
+import com.example.rms.ui.components.StarlightLogo
 import com.example.rms.ui.theme.StatusDanger
 import com.example.rms.ui.viewmodel.CaptainViewModel
 
@@ -79,12 +78,12 @@ fun LoginScreen(viewModel: CaptainViewModel) {
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Button(
+        LiquidButton(
             onClick = { viewModel.login(serverUrl, username, password) },
             enabled = !busy,
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp) else Text("دخول")
+            if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = Color.White) else Text("دخول")
         }
         TextButton(onClick = { showServer = !showServer }, modifier = Modifier.fillMaxWidth()) {
             Text(if (showServer) "إخفاء إعدادات الخادم" else "إعدادات الخادم")
@@ -118,8 +117,8 @@ fun ChangePasswordScreen(viewModel: CaptainViewModel) {
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Button(onClick = { viewModel.changePassword(current, next, confirm) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
-            if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp) else Text("حفظ")
+        LiquidButton(onClick = { viewModel.changePassword(current, next, confirm) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
+            if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = Color.White) else Text("حفظ")
         }
         TextButton(onClick = { viewModel.logout() }, modifier = Modifier.fillMaxWidth()) { Text("تسجيل الخروج") }
     }
@@ -127,24 +126,25 @@ fun ChangePasswordScreen(viewModel: CaptainViewModel) {
 
 @Composable
 private fun AuthScaffold(title: String, subtitle: String, logoUrl: String?, content: @Composable () -> Unit) {
+    // الخلفية (سماء Starlight) يرسمها RmsApp؛ هنا بطاقة زجاج سائل في المنتصف
     Box(
         Modifier
             .fillMaxSize()
-            .background(Brush.linearGradient(listOf(BrownDeep, AmberPrimary)))
             .verticalScroll(rememberScrollState())
             .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
-        Card(
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        GlassCard(shape = RoundedCornerShape(30.dp), modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { BrandLogo(logoUrl, 72.dp) }
-                Text(title, fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-                Text(subtitle, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                Text(title, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                Text(subtitle, fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                 content()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    StarlightLogo(Modifier.height(40.dp))
+                    Text("RMS by Starlight", fontSize = 11.sp, letterSpacing = 1.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
+                }
             }
         }
     }

@@ -27,7 +27,7 @@ sourceSets.main {
         "../app/src/main/java/com/example/rms/data",
         "../app/src/main/java/com/example/rms/ui",
     )
-    kotlin.exclude("**/PrefsSessionStore.kt", "**/components/ImageLoader.kt")
+    kotlin.exclude("**/PrefsSessionStore.kt", "**/components/ImageLoader.kt", "**/components/StarlightLogo.kt")
 }
 
 application { mainClass.set("RenderKt") }

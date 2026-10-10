@@ -1,19 +1,15 @@
 package com.example.rms.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -24,8 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -34,8 +28,8 @@ import com.example.rms.ui.screens.ChangePasswordScreen
 import com.example.rms.ui.screens.LoginScreen
 import com.example.rms.ui.screens.OrderScreen
 import com.example.rms.ui.screens.TablesScreen
-import com.example.rms.ui.theme.GlassTopDark
-import com.example.rms.ui.theme.GlassTopLight
+import com.example.rms.ui.components.LiquidButton
+import com.example.rms.ui.components.StarlightBackground
 import com.example.rms.ui.viewmodel.CaptainViewModel
 
 @Composable
@@ -54,11 +48,8 @@ fun RmsApp(viewModel: CaptainViewModel) {
             }
         }
 
-        val gradient = if (isSystemInDarkTheme()) GlassTopDark else GlassTopLight
-        Surface(
-            modifier = Modifier.fillMaxSize().background(Brush.linearGradient(gradient)),
-            color = Color.Transparent
-        ) {
+        // خلفية سماء Starlight: سُدم ملوّنة وشبكة نجوم، والأسطح فوقها زجاج سائل
+        StarlightBackground(Modifier.fillMaxSize()) {
             Box(Modifier.fillMaxSize()) {
                 val u = user
                 when {
@@ -90,6 +81,6 @@ private fun NotAllowedScreen(viewModel: CaptainViewModel) {
     ) {
         Text("هذا الحساب لا يملك صلاحية استخدام تطبيق الكابتن", textAlign = TextAlign.Center, style = MaterialTheme.typography.titleMedium)
         Text("استخدم حسابًا بدور كابتن أو كاشير أو مدير", textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 12.dp))
-        Button(onClick = { viewModel.logout() }) { Text("تسجيل الخروج") }
+        LiquidButton(onClick = { viewModel.logout() }) { Text("تسجيل الخروج") }
     }
 }

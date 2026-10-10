@@ -4,6 +4,7 @@ package com.example.rms.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,8 +24,6 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -50,6 +49,8 @@ import androidx.compose.ui.unit.sp
 import com.example.rms.data.model.DiningTable
 import com.example.rms.data.model.minutesSince
 import com.example.rms.ui.components.BrandLogo
+import com.example.rms.ui.components.GlassCard
+import com.example.rms.ui.components.liquidGlass
 import com.example.rms.ui.components.MutedText
 import com.example.rms.ui.components.money
 import com.example.rms.ui.components.tableColors
@@ -73,6 +74,7 @@ fun TablesScreen(viewModel: CaptainViewModel) {
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                modifier = Modifier.liquidGlass(RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp), dark = isSystemInDarkTheme()),
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         BrandLogo(brand.logoUrl, 36.dp)
@@ -154,11 +156,12 @@ private fun attentionText(t: DiningTable): String = buildList {
 @Composable
 private fun TableCard(t: DiningTable, onClick: () -> Unit) {
     val (bg, border) = tableColors(t.status)
-    Card(
+    // قطرة زجاج ملوّنة حسب الحالة، وحافة حمراء إن كانت الطاولة تحتاج انتباهًا
+    GlassCard(
         onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = bg.copy(alpha = 0.72f), contentColor = TextPrimary),
-        border = BorderStroke(2.dp, if (t.needsAttention) StatusDanger else border),
+        shape = RoundedCornerShape(24.dp),
+        tint = bg,
+        rim = if (t.needsAttention) StatusDanger else border,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -171,10 +174,10 @@ private fun TableCard(t: DiningTable, onClick: () -> Unit) {
                 if ((t.order?.ready ?: 0) > 0) Text("✅")
                 if ((t.order?.pendingApproval ?: 0) > 0) Text("📱")
             }
-            Text(t.number, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold)
+            Text(t.number, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, color = TextPrimary)
             Text("${tableStatusLabel(t.status)} · ${t.seats} مقاعد", fontSize = 12.sp, color = Color(0xFF6B5F52))
             t.order?.let { o ->
-                Text(money(o.total), fontWeight = FontWeight.Bold)
+                Text(money(o.total), fontWeight = FontWeight.Bold, color = TextPrimary)
                 Text(timeLabel(minutesSince(o.openedAt)) + (o.captainName?.let { " · $it" } ?: ""), fontSize = 11.sp, color = Color(0xFF6B5F52))
             }
         }
