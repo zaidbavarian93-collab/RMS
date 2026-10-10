@@ -45,7 +45,7 @@ export default function Login() {
           <div className="field"><label>كلمة المرور</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" /></div>
           <button className="btn" style={{ width: '100%' }} disabled={loading}>{loading ? '...' : 'دخول'}</button>
         </form>
-        <div className="starlight-credit on-glass"><span className="star-mark">✦</span>RMS by Starlight · شركة ستارلايت للحلول التقنية</div>
+        <div className="starlight-credit on-glass"><img src="/icons/starlight-logo.png" alt="Starlight للحلول التقنية" /><small>RMS by Starlight</small></div>
       </div>
     </div>
   );

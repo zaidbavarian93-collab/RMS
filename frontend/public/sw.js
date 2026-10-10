@@ -4,11 +4,11 @@
  * - بيانات GET من /api: الشبكة أولًا (مهلة قصيرة) ثم آخر نسخة محفوظة مع ترويسة X-RMS-Offline
  * - طلبات الكتابة (POST...) لا تمر من هنا؛ التطبيق يحفظها في طابور ويرسلها عند عودة الاتصال
  */
-const VERSION = 'rms-v1';
+const VERSION = 'rms-v2';
 const SHELL = `rms-shell-${VERSION}`;
 const RUNTIME = `rms-runtime-${VERSION}`;
 const API = 'rms-api';
-const SHELL_URLS = ['/', '/index.html', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
+const SHELL_URLS = ['/', '/index.html', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/starlight-logo.png'];
 const API_TIMEOUT_MS = 5000;
 const RUNTIME_MAX = 150;
 

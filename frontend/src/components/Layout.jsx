@@ -102,7 +102,7 @@ export default function Layout({ children }) {
           <div><b>{user.full_name}</b><div className="muted-light">{ROLE_LABELS[user.role]}</div></div>
           <button className="btn small secondary" onClick={logout}>خروج</button>
         </div>
-        <div className="starlight-credit"><span className="star-mark">✦</span>RMS by Starlight · شركة ستارلايت للحلول التقنية</div>
+        <div className="starlight-credit" title="RMS by Starlight · Starlight للحلول التقنية"><span className="starlight-chip"><img src="/icons/starlight-logo.png" alt="Starlight للحلول التقنية" /></span><small>RMS by Starlight</small></div>
       </aside>
       <main className="content">{children}</main>
       {notice && <div className={`toast ${notice.kind}`} role="status">{notice.text}</div>}
