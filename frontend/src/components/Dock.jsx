@@ -8,7 +8,7 @@ const MAX_SCALE = 1.7;  // أقصى تكبير تحت المؤشر
 const RANGE = 140;      // نطاق تأثير التكبير حول المؤشر
 
 // Dock على طريقة macOS: تكبير الأيقونات حسب قربها من المؤشر + قفزة عند الفتح + نقطة للصفحة الحالية
-export default function Dock({ role }) {
+export default function Dock({ role, windowOpen = true, minimized = null, onActivate, onRestore }) {
   const items = ALL_ITEMS.filter((i) => i.dock && i.roles.includes(role));
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -31,10 +31,11 @@ export default function Dock({ role }) {
   }
 
   function open(item) {
-    if (item.to === pathname) return;
-    setBouncing(item.to);
-    setTimeout(() => setBouncing(null), 650);
-    navigate(item.to);
+    if (item.to !== pathname || !windowOpen) {
+      setBouncing(item.to);
+      setTimeout(() => setBouncing(null), 650);
+    }
+    if (onActivate) onActivate(item); else if (item.to !== pathname) navigate(item.to);
   }
 
   if (items.length < 2) return null;
@@ -46,7 +47,7 @@ export default function Dock({ role }) {
           <button
             key={item.to}
             ref={(el) => { refs.current[i] = el; }}
-            className={`dock-item${pathname === item.to ? ' running' : ''}${bouncing === item.to ? ' bounce' : ''}`}
+            className={`dock-item${pathname === item.to && windowOpen ? ' running' : ''}${bouncing === item.to ? ' bounce' : ''}`}
             style={canMagnify ? { width: BASE * s, height: BASE * s } : undefined}
             onClick={() => open(item)}
             aria-label={item.label}
@@ -56,6 +57,15 @@ export default function Dock({ role }) {
           </button>
         );
       })}
+      {minimized && (
+        <>
+          <span className="dock-sep" aria-hidden="true" />
+          <button className="dock-item dock-min" onClick={onRestore} aria-label={`استعادة ${minimized.label}`}>
+            <span className="dock-thumb"><i className="dock-thumb-bar" /><span className={`dock-thumb-icon tint-${minimized.tint}`}>{minimized.icon}</span></span>
+            <span className="dock-label">{minimized.label}</span>
+          </button>
+        </>
+      )}
     </nav>
   );
 }

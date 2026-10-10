@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useClock } from '../utils/motion';
 import { ROLE_LABELS } from '../utils/format';
 import { titleFor } from './nav';
+import { flushQueue, useOnline, useQueue, useServedFromCache } from '../utils/offline';
 
 // أيقونات المظهر كـ SVG (رموز النص مثل ◐ لا تتوفر في كل الخطوط)
 const THEME_ICON = {
@@ -30,6 +31,17 @@ export default function MenuBar({ onToggleSidebar }) {
     return () => document.removeEventListener('pointerdown', close);
   }, [open]);
 
+  const online = useOnline();
+  const stale = useServedFromCache();
+  const pending = useQueue().filter((q) => q.user_id === user.id).length;
+  const status = !online ? 'offline' : stale ? 'stale' : pending ? 'syncing' : 'online';
+  const STATUS_TEXT = {
+    offline: `غير متصل${pending ? ` · ${pending} بانتظار الإرسال` : ''}`,
+    stale: 'الخادم غير متاح · بيانات محفوظة',
+    syncing: `جارٍ الإرسال · ${pending}`,
+    online: 'متصل',
+  };
+
   const date = now.toLocaleDateString('ar-IQ', { weekday: 'short', day: 'numeric', month: 'short' });
   const time = now.toLocaleTimeString('ar-IQ', { hour: 'numeric', minute: '2-digit' });
 
@@ -42,6 +54,9 @@ export default function MenuBar({ onToggleSidebar }) {
         <span className="mb-item mb-title">{titleFor(pathname)}</span>
       </div>
       <div className="mb-end">
+        <button type="button" className={`mb-item mb-net net-${status}`} onClick={() => flushQueue()} title="حالة الاتصال — اضغط لإعادة المحاولة">
+          <i className="net-dot" />{STATUS_TEXT[status]}
+        </button>
         <button type="button" className="mb-item" onClick={cycle} title={`المظهر: ${THEME_LABEL[pref]}`} aria-label={`المظهر: ${THEME_LABEL[pref]}`}>{THEME_ICON[pref]}</button>
         <span className="mb-item mb-clock">{date}&nbsp;&nbsp;{time}</span>
         <div className="mb-menu" ref={menuRef}>

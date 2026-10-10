@@ -6,6 +6,7 @@ const { MenuCategory, MenuItem } = require('./Menu');
 const { Order, OrderItem, Payment, TableCall, ORDER_TYPES, ORDER_STATUSES, ITEM_STATUSES, PAYMENT_METHODS } = require('./Order');
 const { InventoryItem, StockMovement } = require('./Inventory');
 const AuditLog = require('./AuditLog');
+const IdempotencyKey = require('./IdempotencyKey');
 
 Restaurant.hasMany(User, { foreignKey: 'restaurant_id' });
 Restaurant.hasMany(Floor, { foreignKey: 'restaurant_id' });
@@ -33,5 +34,5 @@ StockMovement.belongsTo(InventoryItem, { foreignKey: 'inventory_item_id' });
 module.exports = {
   sequelize, Restaurant, User, ROLES, Floor, DiningTable, TABLE_STATUSES, MenuCategory, MenuItem,
   Order, OrderItem, Payment, TableCall, ORDER_TYPES, ORDER_STATUSES, ITEM_STATUSES, PAYMENT_METHODS,
-  InventoryItem, StockMovement, AuditLog,
+  InventoryItem, StockMovement, AuditLog, IdempotencyKey,
 };

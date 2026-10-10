@@ -4,10 +4,10 @@ const assert = require('assert');
 const app = require('../index');
 
 let base;
-async function call(method, url, { token, body } = {}) {
+async function call(method, url, { token, body, key } = {}) {
   const res = await fetch(base + url, {
     method,
-    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(key ? { 'Idempotency-Key': key } : {}) },
     body: body ? JSON.stringify(body) : undefined,
   });
   return { status: res.status, data: await res.json().catch(() => null) };
@@ -124,6 +124,23 @@ const eq = (a, b, m) => assert.equal(Number(a), Number(b), m);
     assert.equal((await call('GET', '/api/reports/summary', { token: cap })).status, 403);
     const live = (await call('GET', '/api/reports/live', { token: mgr })).data;
     eq(live.tables.total, 18);
+
+    // منع التكرار: نفس الطلب المحفوظ أثناء انقطاع الاتصال يُرسل مرتين → يُنفَّذ مرة واحدة فقط
+    const t2 = (await call('GET', '/api/tables/map', { token: cap })).data.tables.find((t) => t.number === '2');
+    const offlineBody = { type: 'dine_in', table_id: t2.id, guests: 2, items: [{ menu_item_id: kebab.id, quantity: 1 }] };
+    const first = await call('POST', '/api/orders', { token: cap, body: offlineBody, key: 'offline-test-0001' });
+    const again = await call('POST', '/api/orders', { token: cap, body: offlineBody, key: 'offline-test-0001' });
+    assert.equal(first.status, 201); assert.equal(again.status, 201);
+    assert.equal(again.data.id, first.data.id, 'نفس الطلب');
+    assert.equal(again.data.items.length, 1, 'الصنف لم يتكرر');
+    const s1 = await call('POST', `/api/orders/${first.data.id}/send`, { token: cap, key: 'offline-test-0001.send' });
+    const s2 = await call('POST', `/api/orders/${first.data.id}/send`, { token: cap, key: 'offline-test-0001.send' });
+    assert.equal(s1.status, 200); assert.equal(s2.status, 200, 'إعادة الإرسال تعيد النتيجة المحفوظة');
+    // نفس المفتاح من مستخدم آخر لا يتشارك النتيجة
+    const other = await call('POST', '/api/orders', { token: cash, body: { ...offlineBody, items: [{ menu_item_id: tea.id }] }, key: 'offline-test-0001' });
+    assert.equal(other.data.items.length, 2, 'مفتاح مستخدم آخر مستقل');
+    assert.equal((await call('POST', '/api/orders', { token: cap, body: offlineBody, key: 'bad key!' })).status, 400);
+    assert.equal((await call('GET', '/api/nope', { token: cap })).status, 404);
 
     // سجل التدقيق
     const logs = (await call('GET', '/api/audit-logs', { token: mgr })).data;

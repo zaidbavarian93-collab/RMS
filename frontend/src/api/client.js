@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { markServedFromCache } from '../utils/offline';
 
 const api = axios.create({ baseURL: '/api' });
 
@@ -9,9 +10,14 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (r) => r,
+  (r) => {
+    // عامل الخدمة يضيف X-RMS-Offline عند إرجاع آخر نسخة محفوظة بدل بيانات حيّة
+    if (r.config.method === 'get') markServedFromCache(r.headers['x-rms-offline'] === '1');
+    return r;
+  },
   (error) => {
     const isAuthCall = error.config?.url?.startsWith('/auth/login');
+    if (error.response?.headers?.['x-rms-offline'] === '1') markServedFromCache(true);
     if (error.response?.status === 401 && !isAuthCall) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -21,5 +27,5 @@ api.interceptors.response.use(
   }
 );
 
-export const errMsg = (e, fallback = 'حدث خطأ') => e?.response?.data?.message || fallback;
+export const errMsg = (e, fallback = 'حدث خطأ') => e?.response?.data?.message || (!e?.response ? 'لا يوجد اتصال بالخادم — تحقق من الشبكة' : fallback);
 export default api;

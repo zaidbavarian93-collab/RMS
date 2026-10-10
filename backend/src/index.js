@@ -4,6 +4,8 @@ const express = require('express');
 require('express-async-errors');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
+const { purgeOldKeys } = require('./middleware/idempotency');
 const { sequelize } = require('./models');
 
 const app = express();
@@ -25,6 +27,26 @@ app.use('/api/audit-logs', require('./routes/auditLogs'));
 app.use('/api/public', require('./routes/public')); // بلا مصادقة: منيو QR للزبائن
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.use('/api', (req, res) => res.status(404).json({ message: 'المسار غير موجود' }));
+
+// وضع "الخادم الواحد": إن وُجدت نسخة الواجهة المبنية (frontend/dist) يقدّمها الخادم نفسه،
+// فيعمل النظام كموقع على دومين، أو كخادم محلي في المطعم بلا إنترنت (الأجهزة تفتح http://IP-الجهاز:4000)
+const DIST = process.env.FRONTEND_DIST || path.join(__dirname, '..', '..', 'frontend', 'dist');
+if (fs.existsSync(path.join(DIST, 'index.html'))) {
+  app.use(express.static(DIST, {
+    index: false,
+    setHeaders: (res, file) => {
+      // عامل الخدمة والـ manifest يجب ألا يُخزَّنا حتى تصل التحديثات فورًا؛ الملفات ذات البصمة تُخزَّن طويلًا
+      if (/(sw\.js|manifest\.webmanifest|index\.html)$/.test(file)) res.setHeader('Cache-Control', 'no-cache');
+      else if (file.includes(`${path.sep}assets${path.sep}`)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    },
+  }));
+  app.get(/^\/(?!api\/|uploads\/).*/, (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
+    res.sendFile(path.join(DIST, 'index.html'));
+  });
+  console.log(`🌐 يقدّم الواجهة من ${DIST}`);
+}
 
 app.use((err, req, res, next) => {
   if (err.status) return res.status(err.status).json({ message: err.message });
@@ -40,7 +62,11 @@ process.on('unhandledRejection', (err) => console.error('Unhandled rejection:', 
 const PORT = process.env.PORT || 4000;
 if (require.main === module) {
   sequelize.sync()
-    .then(() => app.listen(PORT, () => console.log(`✅ RMS backend running on port ${PORT}`)))
+    .then(() => {
+      purgeOldKeys().catch(() => {});
+      setInterval(() => purgeOldKeys().catch(() => {}), 6 * 3600 * 1000).unref();
+      app.listen(PORT, () => console.log(`✅ RMS running on port ${PORT}`));
+    })
     .catch((err) => {
       console.error('❌ فشل الاتصال بقاعدة البيانات:', err.message);
       process.exit(1);
