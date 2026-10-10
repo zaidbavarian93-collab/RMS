@@ -77,7 +77,7 @@ export default function Layout({ children }) {
       <aside className={`sidebar${open ? ' open' : ''}`}>
         <div className="brand">
           <BrandMark logo={brand.logo} size={44} />
-          <div><h2>{brand.name}</h2><div className="brand-by">نظام إدارة المطعم</div></div>
+          <div><h2>{brand.name}</h2><div className="brand-by">RMS by Starlight</div></div>
         </div>
         <nav>
           {NAV_GROUPS.map((g) => {
@@ -102,6 +102,7 @@ export default function Layout({ children }) {
           <div><b>{user.full_name}</b><div className="muted-light">{ROLE_LABELS[user.role]}</div></div>
           <button className="btn small secondary" onClick={logout}>خروج</button>
         </div>
+        <div className="starlight-credit"><span className="star-mark">✦</span>RMS by Starlight · شركة ستارلايت للحلول التقنية</div>
       </aside>
       <main className="content">{children}</main>
       {notice && <div className={`toast ${notice.kind}`} role="status">{notice.text}</div>}

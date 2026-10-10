@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>RMS by Starlight — كتيب النظام</title>
+<style>
+@font-face { font-family: 'Amiri'; font-weight: 400; src: url(fonts/amiri-1.ttf); }
+@font-face { font-family: 'Amiri'; font-weight: 700; src: url(fonts/amiri-2.ttf); }
+@page { size: A4; margin: 0; }
+:root {
+  --ink: #2b1a0e; --muted: #6f5a46; --amber: #d97706; --amber-2: #f59e0b; --brown: #7c3a0b; --deep: #2a1405;
+  --cream: #fff8ee; --line: rgba(124, 58, 11, .16); --card: rgba(255, 252, 246, .82);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #e9e1d6; }
+body { font-family: "Times New Roman", "Liberation Serif", "Amiri", serif; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 210mm; height: 297mm; position: relative; overflow: hidden; page-break-after: always; break-after: page;
+  background: radial-gradient(120% 70% at 100% 0%, #ffe7c2 0%, transparent 60%), radial-gradient(90% 60% at 0% 100%, #fbd5c0 0%, transparent 60%), var(--cream);
+  padding: 20mm 17mm 18mm; margin: 0 auto 8mm; }
+.page:last-child { page-break-after: auto; break-after: auto; }
+@media print { .page { margin: 0; } body { background: none; } }
+
+/* شريط علوي وسفلي */
+.run-head { position: absolute; top: 8mm; inset-inline: 17mm; display: flex; justify-content: space-between; align-items: center; font-size: 10.5pt; color: var(--muted); }
+.run-head .mark { display: flex; gap: 6px; align-items: center; font-weight: 700; color: var(--brown); letter-spacing: .02em; }
+.run-foot { position: absolute; bottom: 8mm; inset-inline: 17mm; display: flex; justify-content: space-between; font-size: 9.5pt; color: var(--muted); border-top: 1px solid var(--line); padding-top: 2.5mm; }
+.star { display: inline-grid; place-items: center; width: 7mm; height: 7mm; border-radius: 2mm; background: linear-gradient(135deg, var(--amber-2), var(--brown)); color: #fff; font-size: 11pt; }
+
+h1, h2, h3 { margin: 0; font-weight: 700; line-height: 1.25; }
+.kicker { color: var(--amber); font-size: 11pt; font-weight: 700; letter-spacing: .04em; margin-bottom: 2mm; }
+h2 { font-size: 25pt; color: var(--deep); margin-bottom: 3mm; }
+h3 { font-size: 14.5pt; color: var(--brown); margin-bottom: 1.5mm; }
+p { font-size: 12pt; line-height: 1.75; margin: 0 0 3mm; }
+.lead { font-size: 13.5pt; line-height: 1.8; color: #3d2a1a; }
+.muted { color: var(--muted); }
+
+.shot { border-radius: 3.5mm; overflow: hidden; box-shadow: 0 2mm 7mm rgba(60, 30, 5, .22), 0 0 0 1px rgba(124, 58, 11, .12); background: #fff; }
+.shot img { display: block; width: 100%; }
+.shot.crop img { height: 100%; object-fit: cover; object-position: top right; }
+.caption { font-size: 10pt; color: var(--muted); margin-top: 2mm; text-align: center; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 3.5mm; padding: 4mm 4.5mm; }
+.card h3 { font-size: 13pt; }
+.card p { font-size: 11pt; line-height: 1.65; margin: 0; }
+.num { display: inline-grid; place-items: center; width: 7.5mm; height: 7.5mm; border-radius: 50%; background: var(--deep); color: #ffd79a; font-size: 11pt; font-weight: 700; margin-bottom: 2mm; }
+
+ul.ticks { list-style: none; padding: 0; margin: 0 0 3mm; }
+ul.ticks li { position: relative; padding-inline-start: 7mm; font-size: 11.5pt; line-height: 1.65; margin-bottom: 1.6mm; }
+ul.ticks li::before { content: "✦"; position: absolute; inset-inline-start: 0; top: 0; color: var(--amber); font-size: 10pt; }
+ul.ticks li b { color: var(--deep); }
+
+.band { background: linear-gradient(135deg, var(--deep), #5a2a08); color: #fdf1e0; border-radius: 4mm; padding: 5mm 6mm; }
+.band h3 { color: #ffd79a; }
+.band p, .band li { color: #f6e6cf; }
+
+table.spec { width: 100%; border-collapse: collapse; font-size: 11pt; }
+table.spec th, table.spec td { text-align: start; padding: 2.2mm 3mm; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.55; }
+table.spec th { color: var(--brown); width: 34%; font-weight: 700; }
+table.spec thead th { background: var(--deep); color: #ffd79a; border: 0; width: auto; }
+table.spec.compare td:last-child { color: var(--deep); font-weight: 700; }
+
+/* الغلاف */
+.cover { background: radial-gradient(90% 60% at 85% 10%, rgba(245, 158, 11, .45), transparent 60%), radial-gradient(80% 60% at 10% 95%, rgba(217, 119, 6, .35), transparent 60%), linear-gradient(160deg, #2a1405 0%, #4a2208 55%, #1c0d03 100%); color: #fff7ea; padding: 22mm 18mm; }
+.cover .brandline { display: flex; align-items: center; gap: 3mm; font-size: 13pt; color: #ffd79a; }
+.cover .brandline .star { width: 10mm; height: 10mm; font-size: 16pt; border-radius: 3mm; }
+.cover h1 { font-size: 50pt; margin-top: 20mm; letter-spacing: .01em; color: #fff; direction: ltr; text-align: right; }
+.cover h1 span { color: #ffc56b; font-size: 30pt; display: block; margin-top: 2mm; }
+.cover .sub { font-size: 20pt; margin-top: 5mm; color: #ffe7c2; }
+.cover .tag { font-size: 13pt; line-height: 1.8; margin-top: 4mm; color: #f2dcc0; max-width: 150mm; }
+.cover .hero { position: absolute; left: -22mm; bottom: 34mm; width: 175mm; transform: rotate(-4deg); }
+.cover .hero .shot { box-shadow: 0 6mm 18mm rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .18); }
+.cover .phone { position: absolute; right: 22mm; bottom: 22mm; width: 52mm; transform: rotate(3deg); }
+.cover .phone .shot { border-radius: 6mm; border: 2.2mm solid #120802; }
+.cover .foot { position: absolute; bottom: 10mm; inset-inline: 18mm; display: flex; justify-content: space-between; font-size: 10.5pt; color: #e8cfae; }
+.pill { display: inline-block; padding: 1.2mm 3.5mm; border-radius: 99px; background: rgba(255, 215, 154, .14); border: 1px solid rgba(255, 215, 154, .35); color: #ffd79a; font-size: 10.5pt; margin-inline-end: 2mm; margin-top: 2mm; }
+
+/* مخطط الدورة */
+.flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 4mm 0; }
+.step { background: var(--card); border: 1px solid var(--line); border-radius: 3mm; padding: 3.5mm; position: relative; min-height: 34mm; }
+.step b { display: block; color: var(--deep); font-size: 12pt; margin-bottom: 1mm; }
+.step small { font-size: 10pt; color: var(--muted); line-height: 1.55; display: block; }
+.step .who { position: absolute; top: -3mm; inset-inline-start: 3mm; background: var(--amber); color: #fff; font-size: 9pt; padding: .6mm 2.5mm; border-radius: 99px; }
+.arrow-row { text-align: center; color: var(--amber); font-size: 16pt; margin: -1mm 0; }
+
+.phones { display: flex; gap: 6mm; justify-content: center; align-items: flex-start; }
+.phones .shot { border-radius: 5mm; border: 1.8mm solid #1c0d03; }
+.toc { columns: 2; column-gap: 10mm; font-size: 12.5pt; line-height: 2.1; padding: 0; list-style: none; margin: 0; }
+.toc li { break-inside: avoid; border-bottom: 1px dotted var(--line); display: flex; justify-content: space-between; }
+.toc li span:last-child { color: var(--amber); font-weight: 700; }
+.stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 5mm 0; }
+.stat-strip div { text-align: center; background: var(--card); border: 1px solid var(--line); border-radius: 3mm; padding: 3.5mm 2mm; }
+.stat-strip b { display: block; font-size: 22pt; color: var(--amber); }
+.stat-strip span { font-size: 10.5pt; color: var(--muted); }
+.placeholder { color: #a5866a; border-bottom: 1px dashed #c9a882; padding: 0 8mm; }
+</style>
+</head>
+<body>
+
+<!-- 1. الغلاف -->
+<section class="page cover">
+  <div class="brandline"><span class="star">✦</span> شركة ستارلايت للحلول التقنية · Starlight Tech Solutions</div>
+  <h1>RMS<span>by Starlight</span></h1>
+  <div class="sub">نظام إدارة المطاعم المتكامل</div>
+  <div class="tag">المطعم كله في نظام واحد: الصالة والكابتن، المطبخ، الكاشير، المنيو الرقمي عبر QR، المخزون، والتقارير. نظام عربي بالكامل يعمل كموقع إلكتروني أو كخادم محلي بلا إنترنت.</div>
+  <div><span class="pill">الكابتن</span><span class="pill">المطبخ KDS</span><span class="pill">الكاشير</span><span class="pill">منيو QR</span><span class="pill">المخزون</span><span class="pill">التقارير</span></div>
+  <div class="hero"><div class="shot"><img src="jpg/captain-map.jpg"></div></div>
+  <div class="phone"><div class="shot"><img src="jpg/qr-menu.jpg"></div></div>
+  <div class="foot"><span>كتيب تعريفي للشركات والمطاعم</span><span>الإصدار 1.0 · 2026</span></div>
+</section>
+
+<!-- 2. المحتويات + نبذة -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>نبذة عن النظام</span></div>
+  <div class="kicker">من عائلة أنظمة ستارلايت</div>
+  <h2>نظام واحد يدير المطعم من الباب إلى الفاتورة</h2>
+  <p class="lead">RMS by Starlight هو الشقيق الثالث في عائلة أنظمة ستارلايت، بعد نظامَي <b>إدارة المدارس (SMS)</b> و<b>إدارة المستشفيات (HIS)</b>. بُني على نفس الأسس المجرّبة: هرم تنظيمي واضح، وصلاحيات حسب الدور، وسجل تدقيق لكل عملية حساسة، وواجهة عربية كاملة من اليمين إلى اليسار.</p>
+  <p>يجمع النظام كل من يعمل في المطعم على قاعدة بيانات واحدة: المالك والمدير، والكابتن في الصالة، والطاهي في المطبخ، والكاشير، وحتى الزبون الذي يطلب من هاتفه. يرى كل منهم ما يخصه فقط، في اللحظة نفسها.</p>
+  <div class="stat-strip">
+    <div><b>3</b><span>أنظمة في نظام واحد</span></div>
+    <div><b>5</b><span>أدوار بصلاحيات مستقلة</span></div>
+    <div><b>QR</b><span>منيو رقمي لكل طاولة</span></div>
+    <div><b>Offline</b><span>يعمل بلا إنترنت</span></div>
+  </div>
+  <h3 style="margin-top:6mm">محتويات الكتيب</h3>
+  <ul class="toc">
+    <li><span>لماذا RMS by Starlight؟</span><span>3</span></li>
+    <li><span>ثلاثة أنظمة في منصة واحدة</span><span>4</span></li>
+    <li><span>رحلة الطلب</span><span>5</span></li>
+    <li><span>نظام الكابتن</span><span>6</span></li>
+    <li><span>الكابتن على الجوال وتطبيق Android</span><span>7</span></li>
+    <li><span>منيو الزبون عبر QR</span><span>8</span></li>
+    <li><span>شاشة المطبخ (KDS)</span><span>9</span></li>
+    <li><span>الكاشير والفواتير</span><span>10</span></li>
+    <li><span>إدارة المنيو والطاولات</span><span>11</span></li>
+    <li><span>المخزون والوصفات</span><span>12</span></li>
+    <li><span>لوحة التحكم والتقارير</span><span>13</span></li>
+    <li><span>الموظفون والصلاحيات والأمان</span><span>14</span></li>
+    <li><span>هوية مطعمك على النظام</span><span>15</span></li>
+    <li><span>طرق التشغيل والعمل بلا إنترنت</span><span>16</span></li>
+    <li><span>المواصفات التقنية</span><span>17</span></li>
+    <li><span>خطوات التطبيق والتواصل</span><span>18</span></li>
+  </ul>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>2</span></div>
+</section>
+
+<!-- 3. لماذا -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>لماذا RMS by Starlight؟</span></div>
+  <div class="kicker">التحدي والحل</div>
+  <h2>مشكلات يومية في كل مطعم، وحل واحد لها</h2>
+  <p class="lead">تضيع على المطاعم أموال ووقت في تفاصيل صغيرة: ورقة طلب تُفقد، صنف يُحضَّر مرتين، فاتورة تُحسب يدويًا، مخزون ينفد دون أن يعلم أحد. صُمم النظام ليغلق هذه الثغرات واحدة واحدة.</p>
+  <div class="grid2" style="margin-top:5mm">
+    <div class="card"><h3>أخطاء الطلبات الورقية</h3><p>الكابتن يرسل الطلب إلى المطبخ مباشرة من الجهاز. لا خط غير مقروء، ولا ورقة ضائعة، ولا صنف منسي.</p></div>
+    <div class="card"><h3>بطء الخدمة في أوقات الذروة</h3><p>كل محطة (المطبخ، البار، الحلويات) ترى أصنافها فقط مرتبة بالوقت، والكابتن يُنبَّه فور جاهزية الصنف.</p></div>
+    <div class="card"><h3>تسرّب الإيرادات</h3><p>الأسعار تُقرأ من المنيو في الخادم فقط، والخصم والإلغاء بصلاحيات محددة وسبب مكتوب، وكل عملية في سجل التدقيق.</p></div>
+    <div class="card"><h3>المخزون المجهول</h3><p>لكل صنف وصفة، وتُخصم مكوّناتها تلقائيًا عند الدفع، مع تنبيه حين تنخفض أي مادة عن حدها الأدنى.</p></div>
+    <div class="card"><h3>قرارات بلا أرقام</h3><p>لوحة تحكم حيّة وتقارير مبيعات حسب الساعة والصنف والكابتن وطريقة الدفع، لأي فترة تختارها.</p></div>
+    <div class="card"><h3>انقطاع الإنترنت</h3><p>يعمل النظام على خادم محلي داخل المطعم بلا إنترنت، ويحتفظ بالطلبات أثناء الانقطاع ثم يزامنها تلقائيًا.</p></div>
+  </div>
+  <div class="band" style="margin-top:6mm">
+    <h3>القيمة التي يحصل عليها المطعم</h3>
+    <ul class="ticks" style="margin:0">
+      <li><b style="color:#fff">خدمة أسرع</b> وطلبات أدق من الصالة إلى المطبخ.</li>
+      <li><b style="color:#fff">رقابة كاملة</b> على الإيرادات والخصومات والإلغاءات.</li>
+      <li><b style="color:#fff">تجربة عصرية للزبون</b>: منيو بالصور وطلب ونداء من هاتفه.</li>
+      <li><b style="color:#fff">صورة واضحة للأداء</b> يوميًا دون جداول يدوية.</li>
+    </ul>
+  </div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>3</span></div>
+</section>
+
+<!-- 4. ثلاثة أنظمة -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>ثلاثة أنظمة في منصة واحدة</span></div>
+  <div class="kicker">مكوّنات النظام</div>
+  <h2>ثلاثة أنظمة، قاعدة بيانات واحدة</h2>
+  <div class="grid3" style="margin-top:4mm">
+    <div class="card"><span class="num">1</span><h3>إدارة المطعم</h3><p>لوحة التحكم، تقارير المبيعات، المخزون والوصفات، الموظفون، سجل التدقيق، وإعدادات الضريبة والخدمة وهوية المطعم.</p><p class="muted" style="margin-top:2mm">للمالك والمدير</p></div>
+    <div class="card"><span class="num">2</span><h3>نظام المنيو</h3><p>تصنيفات وأصناف بالصور والإضافات، زر «نفد/متوفر» فوري، ومنيو عام للزبون عبر رمز QR على كل طاولة.</p><p class="muted" style="margin-top:2mm">للمدير والزبون</p></div>
+    <div class="card"><span class="num">3</span><h3>نظام الكابتن</h3><p>خريطة الطاولات بالألوان، أخذ الطلب وإرساله، موافقة طلبات QR، شاشة المطبخ، والكاشير.</p><p class="muted" style="margin-top:2mm">للكابتن والمطبخ والكاشير</p></div>
+  </div>
+  <div class="shot crop" style="margin-top:7mm;height:78mm"><img src="jpg/dashboard.jpg"></div>
+  <div class="caption">لوحة التحكم: مبيعات اليوم، الطاولات المشغولة، حالة المطبخ، وتنبيهات المخزون في شاشة واحدة.</div>
+  <h3 style="margin-top:6mm">خمسة أدوار، لكل منها شاشاته وصلاحياته</h3>
+  <table class="spec">
+    <tr><th>المالك</th><td>كل شيء، على كل الفروع.</td></tr>
+    <tr><th>المدير</th><td>كل شيء في فرعه: المنيو، الطاولات، المخزون، التقارير، الموظفون، وإلغاء الطلبات.</td></tr>
+    <tr><th>الكاشير</th><td>الفواتير والدفع والخصم، والتقارير، ومتابعة الطلبات.</td></tr>
+    <tr><th>الكابتن</th><td>الطاولات، أخذ الطلبات، الموافقة على طلبات QR، التقديم، وطلب الفاتورة.</td></tr>
+    <tr><th>المطبخ</th><td>شاشة المطبخ فقط، دون أي وصول للفواتير أو التقارير.</td></tr>
+  </table>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>4</span></div>
+</section>
+
+<!-- 5. رحلة الطلب -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>رحلة الطلب</span></div>
+  <div class="kicker">كيف يعمل النظام</div>
+  <h2>رحلة الطلب من الطاولة إلى التقرير</h2>
+  <p class="lead">كل طلب يمر بمسار واضح ومتتبَّع. يرى كل شخص في المطعم حالته لحظة بلحظة، ولا يُفقد شيء بين الصالة والمطبخ والكاشير.</p>
+  <div class="flow">
+    <div class="step"><span class="who">الزبون</span><b>يمسح رمز QR</b><small>يتصفح المنيو بالصور ويرسل طلبه أو ينادي الكابتن من هاتفه.</small></div>
+    <div class="step"><span class="who">الكابتن</span><b>يفتح الطاولة</b><small>يأخذ الطلب بنفسه، أو يوافق على طلب الزبون قبل وصوله للمطبخ.</small></div>
+    <div class="step"><span class="who">النظام</span><b>يوزّع الأصناف</b><small>كل صنف يذهب لمحطته: المطبخ، البار، أو الحلويات.</small></div>
+    <div class="step"><span class="who">المطبخ</span><b>يحضّر</b><small>انتظار ← قيد التحضير ← جاهز، ويُنبَّه الكابتن فورًا.</small></div>
+  </div>
+  <div class="arrow-row">⬇</div>
+  <div class="flow">
+    <div class="step"><span class="who">الكابتن</span><b>يقدّم</b><small>يؤكد التقديم، ويضيف أصنافًا أو ينقل الطاولة عند الحاجة.</small></div>
+    <div class="step"><span class="who">الكابتن</span><b>يطلب الفاتورة</b><small>تتحول الطاولة إلى «فاتورة» وتظهر عند الكاشير مباشرة.</small></div>
+    <div class="step"><span class="who">الكاشير</span><b>يستلم الدفع</b><small>نقدًا أو بطاقة أو مقسّمًا، ثم يطبع الإيصال باسم المطعم وشعاره.</small></div>
+    <div class="step"><span class="who">النظام</span><b>يُغلق الدورة</b><small>خصم المخزون، تحديث التقارير، تسجيل التدقيق، والطاولة «تنظيف».</small></div>
+  </div>
+  <div class="grid2" style="margin-top:6mm">
+    <div class="card"><h3>طلب واحد لكل طاولة</h3><p>لو فتح كابتنان الطاولة نفسها في اللحظة نفسها، يضمن الخادم طلبًا واحدًا فقط، فلا طلبات مكررة.</p></div>
+    <div class="card"><h3>لقطة ثابتة للأسعار</h3><p>يحفظ كل صنف في الطلب اسمه وسعره وقت الطلب، فلا تتغير الفواتير القديمة إذا عُدّل المنيو.</p></div>
+    <div class="card"><h3>موافقة الكابتن على طلبات QR</h3><p>أصناف الزبون لا تُحسب ولا تصل للمطبخ قبل أن يوافق عليها الكابتن، منعًا للعبث.</p></div>
+    <div class="card"><h3>إلغاء منضبط</h3><p>إلغاء صنف مُرسل يتطلب سببًا، وبعد بدء التحضير يتطلب صلاحية المدير.</p></div>
+  </div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>5</span></div>
+</section>
+
+<!-- 6. الكابتن -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>نظام الكابتن</span></div>
+  <div class="kicker">الصالة</div>
+  <h2>خريطة الصالة بين يدي الكابتن</h2>
+  <p>كل طاولة بلون يدل على حالتها: فارغة، مشغولة، بانتظار الفاتورة، محجوزة، أو قيد التنظيف. وفوق الخريطة شريط تنبيهات: زبون ينادي، صنف جاهز للتقديم، أو طلب QR بانتظار الموافقة.</p>
+  <div class="shot crop" style="height:84mm"><img src="jpg/captain-map.jpg"></div>
+  <div class="caption">خريطة الطاولات حسب القاعات، مع عدّاد لكل حالة وتنبيهات فورية.</div>
+  <div class="shot crop" style="margin-top:5mm;height:80mm"><img src="jpg/captain-order.jpg"></div>
+  <div class="caption">شاشة الطاولة: إضافة الأصناف بالبحث أو التصنيف، متابعة حالة كل صنف، طلب الفاتورة، ونقل الطاولة.</div>
+  <ul class="ticks" style="margin-top:4mm; columns:2; column-gap:8mm">
+    <li>فتح الطاولة وتحديد عدد الضيوف.</li>
+    <li>إضافة أصناف مع الإضافات والملاحظات.</li>
+    <li>إرسال المسودة إلى المطبخ بلمسة.</li>
+    <li>تأكيد تقديم الأصناف الجاهزة.</li>
+    <li>نقل الطلب إلى طاولة أخرى.</li>
+    <li>طلب الفاتورة وإعادة فتح الطلب.</li>
+  </ul>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>6</span></div>
+</section>
+
+<!-- 7. الجوال و Android -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>الكابتن على الجوال</span></div>
+  <div class="kicker">في جيب الكابتن</div>
+  <h2>على الجوال، وفي تطبيق Android</h2>
+  <p>يعمل نظام الكابتن من متصفح أي هاتف، ويمكن تثبيته على الشاشة الرئيسية كتطبيق. وللمطاعم التي تفضّل تطبيقًا أصليًا، يتوفر <b>تطبيق Android للكابتن</b> يعرض اسم المطعم وشعاره ويتصل بنفس الخادم.</p>
+  <div class="phones" style="margin-top:5mm">
+    <div style="width:58mm"><div class="shot"><img src="jpg/captain-mobile.jpg"></div><div class="caption">الكابتن من متصفح الجوال</div></div>
+    <div style="width:58mm"><div class="shot"><img src="jpg/03-tables-brand.jpg"></div><div class="caption">تطبيق Android: الطاولات</div></div>
+    <div style="width:58mm"><div class="shot"><img src="jpg/04-order.jpg"></div><div class="caption">تطبيق Android: الطلب</div></div>
+  </div>
+  <div class="grid2" style="margin-top:6mm">
+    <div class="card"><h3>تحديث حي</h3><p>تتحدّث الخريطة والطلب كل بضع ثوانٍ، فيرى الكابتن الصنف الجاهز ونداء الزبون دون أن يحدّث الشاشة.</p></div>
+    <div class="card"><h3>يتحمّل ضعف الشبكة</h3><p>عند انقطاع الاتصال يظهر شريط تنبيه، وتُحفظ الطلبات حتى يعود الاتصال ثم تُرسل تلقائيًا دون تكرار.</p></div>
+  </div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>7</span></div>
+</section>
+
+<!-- 8. QR -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>منيو الزبون عبر QR</span></div>
+  <div class="kicker">تجربة الزبون</div>
+  <h2>المنيو في هاتف الزبون</h2>
+  <p class="lead">على كل طاولة رمز QR خاص بها. يمسحه الزبون فيفتح منيو المطعم باسمه وشعاره، دون تحميل أي تطبيق.</p>
+  <div class="phones" style="margin-top:4mm">
+    <div style="width:62mm"><div class="shot"><img src="jpg/qr-menu.jpg"></div><div class="caption">المنيو بالتصنيفات والأسعار</div></div>
+    <div style="width:62mm"><div class="shot"><img src="jpg/qr-cart.jpg"></div><div class="caption">السلة وإرسال الطلب</div></div>
+  </div>
+  <ul class="ticks" style="margin-top:6mm">
+    <li><b>تصفّح وطلب:</b> الزبون يختار الأصناف والإضافات ويرسل طلبه، فيصل للكابتن «بانتظار الموافقة».</li>
+    <li><b>نداء بلمسة:</b> أزرار «نادِ الكابتن» و«ماء» و«الفاتورة» تظهر فورًا في تنبيهات الكابتن.</li>
+    <li><b>متابعة الطلب:</b> يرى الزبون ما طلبه وحالته على الطاولة.</li>
+    <li><b>منيو عرض فقط:</b> يمكن للمطعم إيقاف الطلب من QR والإبقاء على المنيو للعرض.</li>
+    <li><b>حماية:</b> المسارات العامة محدودة المعدّل، ورمز كل طاولة فريد لا يُخمَّن.</li>
+  </ul>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>8</span></div>
+</section>
+
+<!-- 9. المطبخ -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>شاشة المطبخ</span></div>
+  <div class="kicker">Kitchen Display System</div>
+  <h2>شاشة المطبخ: وداعًا للأوراق</h2>
+  <p>شاشة على الحائط أو جهاز لوحي في المطبخ تعرض الأصناف المرسلة مرتبة بوقت الإرسال، مجمّعة حسب الطاولة، مع اسم الكابتن والوقت المنقضي.</p>
+  <div class="shot"><img src="jpg/kitchen.jpg"></div>
+  <div class="caption">كل صنف يمر بثلاث حالات بلمسة واحدة: انتظار ← قيد التحضير ← جاهز.</div>
+  <div class="grid3" style="margin-top:6mm">
+    <div class="card"><h3>محطات منفصلة</h3><p>لكل تصنيف محطته: المطبخ، البار، الحلويات. وكل محطة تعرض أصنافها فقط.</p></div>
+    <div class="card"><h3>إشعار الجاهزية</h3><p>بمجرد أن يصبح الصنف «جاهز» يظهر تنبيه للكابتن على خريطة الطاولات.</p></div>
+    <div class="card"><h3>صلاحيات محدودة</h3><p>حساب المطبخ يرى شاشة التحضير فقط، ولا يصل إلى الفواتير أو التقارير.</p></div>
+  </div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>9</span></div>
+</section>
+
+<!-- 10. الكاشير -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>الكاشير والفواتير</span></div>
+  <div class="kicker">الدفع</div>
+  <h2>الكاشير: فاتورة دقيقة في ثوانٍ</h2>
+  <p>تظهر الطلبات المفتوحة مرتبة، ويختار الكاشير الطلب فيرى الفاتورة كاملة مع الضريبة ورسوم الخدمة، ثم يستلم الدفع ويطبع الإيصال.</p>
+  <div class="shot"><img src="jpg/cashier.jpg"></div>
+  <div class="caption">الفاتورة جاهزة للطباعة باسم المطعم وشعاره، مع الدفع النقدي أو بالبطاقة أو المقسّم.</div>
+  <div class="grid2" style="margin-top:6mm">
+    <div class="card"><h3>دفع مقسّم</h3><p>جزء نقدًا وجزء بالبطاقة، أو عدة دفعات للطلب نفسه. لا يُغلق الطلب إلا إذا غطّت الدفعات الإجمالي.</p></div>
+    <div class="card"><h3>لا دفع مزدوج</h3><p>الخادم يمنع دفع الطلب مرتين حتى لو ضُغط الزر مرتين أو انقطع الاتصال وأُعيد الإرسال.</p></div>
+    <div class="card"><h3>خصم بصلاحية</h3><p>الخصم للكاشير والمدير فقط، ويُسجَّل في سجل التدقيق مع اسم المنفّذ.</p></div>
+    <div class="card"><h3>إغلاق تلقائي</h3><p>بعد الدفع: خصم المخزون حسب الوصفات، وتحويل الطاولة إلى «تنظيف»، وتحديث التقارير.</p></div>
+  </div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>10</span></div>
+</section>
+
+<!-- 11. المنيو والطاولات -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>إدارة المنيو والطاولات</span></div>
+  <div class="kicker">الإعداد</div>
+  <h2>المنيو والطاولات تحت سيطرتك</h2>
+  <div class="shot crop" style="margin-top:3mm;height:80mm"><img src="jpg/menu.jpg"></div>
+  <div class="caption">إدارة المنيو: تصنيفات بمحطات، وأصناف بالسعر والصورة والإضافات، وزر «متوفر/نفد».</div>
+  <div class="shot crop" style="margin-top:5mm;height:80mm"><img src="jpg/tables-qr.jpg"></div>
+  <div class="caption">القاعات والطاولات، مع بطاقات QR جاهزة للطباعة تحمل اسم المطعم وشعاره ورقم الطاولة.</div>
+  <ul class="ticks" style="margin-top:4mm; columns:2; column-gap:8mm">
+    <li>صور للأصناف بصيغ PNG وJPG وWebP.</li>
+    <li>إضافات بأسعار (حجم، صوص، إضافة جبن…).</li>
+    <li>«نفد» يُخفي الصنف فورًا من الكابتن والزبون.</li>
+    <li>قاعات متعددة: داخلية، عائلية، تراس.</li>
+    <li>عدد مقاعد لكل طاولة.</li>
+    <li>طباعة رموز QR لكل الطاولات دفعة واحدة.</li>
+  </ul>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>11</span></div>
+</section>
+
+<!-- 12. المخزون -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>المخزون والوصفات</span></div>
+  <div class="kicker">التكاليف</div>
+  <h2>مخزون يُخصم وحده</h2>
+  <p class="lead">اربط كل صنف بوصفته: كم غرامًا من الدجاج، وكم من الأرز، وكم من الخبز. عند دفع الطلب يخصم النظام المكوّنات تلقائيًا، فتعرف دائمًا ما لديك فعلًا.</p>
+  <div class="shot" style="margin-top:4mm"><img src="jpg/inventory.jpg"></div>
+  <div class="caption">المواد بالكميات والوحدات والحد الأدنى، مع حركات الشراء والتسوية والهدر.</div>
+  <div class="grid3" style="margin-top:6mm">
+    <div class="card"><h3>وصفات</h3><p>مكوّنات كل صنف بالكمية والوحدة.</p></div>
+    <div class="card"><h3>تنبيه النقص</h3><p>تظهر المادة في لوحة التحكم عند نزولها تحت الحد الأدنى.</p></div>
+    <div class="card"><h3>سجل الحركات</h3><p>شراء، تسوية جرد، هدر، وخصم بيع، كلها مؤرخة وباسم المنفّذ.</p></div>
+  </div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>12</span></div>
+</section>
+
+<!-- 13. التقارير -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>لوحة التحكم والتقارير</span></div>
+  <div class="kicker">القرار</div>
+  <h2>أرقام المطعم في لحظتها</h2>
+  <p>تقارير لأي فترة تختارها: المبيعات، عدد الفواتير، متوسط الفاتورة، الخصومات، الأصناف الملغاة، الأكثر مبيعًا، المبيعات حسب الساعة، طرق الدفع، وأداء كل كابتن.</p>
+  <div class="shot crop" style="height:84mm"><img src="jpg/reports.jpg"></div>
+  <div class="caption">التقارير: الأصناف الأكثر مبيعًا، المبيعات حسب الساعة، طرق الدفع، أداء الكباتن، ونوع الطلب.</div>
+  <div class="shot crop" style="margin-top:5mm;height:72mm"><img src="jpg/orders.jpg"></div>
+  <div class="caption">سجل الطلبات: كل طلب برقمه وطاولته وكابتنه وحالته وإجماليه، مع البحث بالتاريخ.</div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>13</span></div>
+</section>
+
+<!-- 14. الموظفون والأمان -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>الموظفون والصلاحيات والأمان</span></div>
+  <div class="kicker">الرقابة</div>
+  <h2>كل عملية معروفة: من فعلها ومتى</h2>
+  <div class="shot crop" style="margin-top:3mm;height:62mm"><img src="jpg/users.jpg"></div><div class="caption">الموظفون والأدوار وإعادة تعيين كلمات المرور.</div>
+  <div class="shot crop" style="margin-top:4mm;height:62mm"><img src="jpg/audit.jpg"></div><div class="caption">سجل التدقيق: كل إنشاء وتعديل ودفع وإلغاء، باسم المنفّذ ووقته.</div>
+  <h3 style="margin-top:4mm">الأمان مطبّق على الخادم، لا في الواجهة فقط</h3>
+  <ul class="ticks">
+    <li><b>صلاحيات حسب الدور (RBAC):</b> كل طلب يُفحص في الخادم حسب دور المستخدم وفرعه.</li>
+    <li><b>الأسعار من قاعدة البيانات دائمًا:</b> لا يُوثق بأي سعر يصل من الجهاز.</li>
+    <li><b>كلمات مرور قوية إلزامية:</b> كلمة المرور المؤقتة أو الضعيفة تُجبر على التغيير قبل أي استخدام.</li>
+    <li><b>منع التكرار:</b> مفتاح لكل عملية يمنع تنفيذها مرتين عند إعادة الإرسال.</li>
+    <li><b>رفع الصور بأمان:</b> PNG وJPG وWebP فقط، مع رفض SVG وتحديد الحجم.</li>
+    <li><b>سجل تدقيق</b> لكل عملية حساسة، كما في أنظمة ستارلايت للمدارس والمستشفيات.</li>
+  </ul>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>14</span></div>
+</section>
+
+<!-- 15. الهوية -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>هوية مطعمك على النظام</span></div>
+  <div class="kicker">White-label</div>
+  <h2>النظام يحمل اسم مطعمك وشعاره</h2>
+  <p class="lead">من صفحة الإعدادات يرفع المالك أو المدير شعار المطعم ويكتب اسمه، فيظهران فورًا في كل مكان يراه الموظفون والزبائن.</p>
+  <div class="shot" style="margin-top:3mm"><img src="jpg/settings.jpg"></div>
+  <div class="caption">الإعدادات ← هوية المطعم: سحب الشعار وإفلاته، الاسم، وإعدادات الضريبة والخدمة والعملة.</div>
+  <div class="grid2" style="margin-top:6mm">
+    <div class="card"><h3>أين يظهر الاسم والشعار؟</h3>
+      <ul class="ticks" style="margin:2mm 0 0"><li>الشريط الجانبي وعنوان المتصفح وأيقونته.</li><li>شاشة الدخول.</li><li>منيو الزبون عبر QR.</li><li>بطاقات QR المطبوعة.</li><li>إيصال الكاشير.</li><li>تطبيق الكابتن على Android.</li></ul></div>
+    <div><div class="shot"><img src="jpg/login.jpg"></div><div class="caption">شاشة الدخول باسم المطعم.</div></div>
+  </div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>15</span></div>
+</section>
+
+<!-- 16. طرق التشغيل -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>طرق التشغيل</span></div>
+  <div class="kicker">النشر</div>
+  <h2>موقع إلكتروني، أو خادم محلي بلا إنترنت</h2>
+  <p>النظام نفسه يعمل بثلاث طرق، ويختار المطعم ما يناسبه:</p>
+  <div class="grid3" style="margin-top:3mm">
+    <div class="card"><span class="num">1</span><h3>موقع إلكتروني</h3><p>على خادم سحابي ودومين خاص (HTTPS). مناسب للفروع المتعددة والإدارة من خارج المطعم.</p></div>
+    <div class="card"><span class="num">2</span><h3>خادم محلي</h3><p>على جهاز داخل المطعم. كل الأجهزة تتصل عبر شبكة Wi-Fi المطعم، ولا حاجة للإنترنت إطلاقًا.</p></div>
+    <div class="card"><span class="num">3</span><h3>تطبيق مثبّت (PWA)</h3><p>يُثبَّت من المتصفح على الجوال أو الحاسوب، ويواصل العمل أثناء انقطاع الاتصال.</p></div>
+  </div>
+  <div class="band" style="margin-top:6mm">
+    <h3>العمل أثناء انقطاع الاتصال</h3>
+    <ul class="ticks" style="margin:0">
+      <li>الشاشات والمنيو محفوظة على الجهاز وتفتح فورًا حتى بلا اتصال.</li>
+      <li>الطلبات التي يأخذها الكابتن أثناء الانقطاع تُحفظ في طابور، ثم تُرسل تلقائيًا عند عودة الاتصال، دون تكرار.</li>
+      <li>مؤشر واضح في الشريط الجانبي: متصل، بلا اتصال، أو طلبات بانتظار المزامنة.</li>
+      <li>إن رفض الخادم طلبًا عند المزامنة (مثلًا صنف نفد) يظهر إشعار بالسبب.</li>
+    </ul>
+  </div>
+  <div class="card" style="margin-top:6mm">
+    <h3>خادم محلي آمن بأمر واحد</h3>
+    <p>يُشغَّل النظام كاملًا على جهاز المطعم بأمر واحد. ومع خادم <b>Caddy</b> يعمل الاتصال المحلي عبر HTTPS بشهادة خاصة بالمطعم، مع صفحة إعداد تشرح تثبيت الشهادة على أجهزة Android وiPhone وويندوز وماك خطوة بخطوة.</p>
+  </div>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>16</span></div>
+</section>
+
+<!-- 17. المواصفات -->
+<section class="page">
+  <div class="run-head"><span class="mark"><span class="star">✦</span> RMS by Starlight</span><span>المواصفات التقنية</span></div>
+  <div class="kicker">تحت الغطاء</div>
+  <h2>المواصفات التقنية</h2>
+  <table class="spec" style="margin-top:3mm">
+    <tr><th>الخادم</th><td>Node.js وExpress، مع Sequelize وقاعدة بيانات PostgreSQL.</td></tr>
+    <tr><th>الواجهة</th><td>React وVite، عربية بالكامل من اليمين لليسار، بتصميم زجاجي وخط Times New Roman.</td></tr>
+    <tr><th>تطبيق الكابتن</th><td>Android أصلي بلغة Kotlin وJetpack Compose.</td></tr>
+    <tr><th>المصادقة</th><td>JWT مع صلاحيات حسب الدور، وإلزام بتغيير كلمات المرور المؤقتة.</td></tr>
+    <tr><th>العمل بلا اتصال</th><td>Service Worker وطابور طلبات مع مفاتيح منع التكرار.</td></tr>
+    <tr><th>التشغيل المحلي</th><td>أمر واحد، أو Docker Compose مع Caddy وHTTPS داخلي.</td></tr>
+    <tr><th>التحديث الحي</th><td>تحديث دوري كل 4 إلى 5 ثوانٍ للمطبخ والكابتن، دون تعقيد في النشر.</td></tr>
+    <tr><th>الأجهزة</th><td>أي متصفح حديث على الحاسوب أو الجهاز اللوحي أو الجوال، وطابعة إيصالات عبر المتصفح.</td></tr>
+  </table>
+  <h3 style="margin-top:7mm">من عائلة أنظمة ستارلايت</h3>
+  <p>يتبع RMS نفس البنية التي بُني عليها نظاما المدارس والمستشفيات، فمن يعرف أحدها يعرف الآخر:</p>
+  <table class="spec compare">
+    <thead><tr><th>SMS · المدارس</th><th>HIS · المستشفيات</th><th>RMS · المطاعم</th></tr></thead>
+    <tr><td>المدرسة</td><td>المستشفى</td><td>المطعم / الفرع</td></tr>
+    <tr><td>الصف ← الشعبة</td><td>القسم ← السرير</td><td>القاعة ← الطاولة</td></tr>
+    <tr><td>الطالب</td><td>المريض</td><td>الطلب</td></tr>
+    <tr><td>المنهج</td><td>الخدمات الطبية</td><td>المنيو</td></tr>
+    <tr><td>الأقساط والمحاسبة</td><td>الفوترة والتأمين</td><td>الفواتير والدفع</td></tr>
+    <tr><td>المخزون</td><td>الصيدلية والمخزون</td><td>المخزون والوصفات</td></tr>
+    <tr><td>سجل التدقيق</td><td>سجل التدقيق</td><td>سجل التدقيق</td></tr>
+  </table>
+  <div class="run-foot"><span>RMS by Starlight · شركة ستارلايت للحلول التقنية</span><span>17</span></div>
+</section>
+
+<!-- 18. خطوات التطبيق + التواصل -->
+<section class="page cover" style="padding-top:24mm">
+  <div class="brandline"><span class="star">✦</span> RMS by Starlight</div>
+  <h2 style="color:#fff; font-size:28pt; margin-top:8mm">من التوقيع إلى أول طلب</h2>
+  <div class="grid2" style="margin-top:6mm">
+    <div class="card" style="background:rgba(255,255,255,.08); border-color:rgba(255,215,154,.3)"><span class="num" style="background:#ffc56b;color:#2a1405">1</span><h3 style="color:#ffd79a">زيارة وتحليل</h3><p style="color:#f6e6cf">نتعرف على مطعمك: القاعات والطاولات، المحطات، الأصناف، وطريقة العمل.</p></div>
+    <div class="card" style="background:rgba(255,255,255,.08); border-color:rgba(255,215,154,.3)"><span class="num" style="background:#ffc56b;color:#2a1405">2</span><h3 style="color:#ffd79a">الإعداد</h3><p style="color:#f6e6cf">إدخال المنيو والصور والوصفات، تجهيز الطاولات ورموز QR، وإضافة اسم المطعم وشعاره.</p></div>
+    <div class="card" style="background:rgba(255,255,255,.08); border-color:rgba(255,215,154,.3)"><span class="num" style="background:#ffc56b;color:#2a1405">3</span><h3 style="color:#ffd79a">التشغيل والتدريب</h3><p style="color:#f6e6cf">تركيب الخادم (سحابي أو محلي)، وتدريب الكباتن والمطبخ والكاشير والإدارة.</p></div>
+    <div class="card" style="background:rgba(255,255,255,.08); border-color:rgba(255,215,154,.3)"><span class="num" style="background:#ffc56b;color:#2a1405">4</span><h3 style="color:#ffd79a">الدعم والمتابعة</h3><p style="color:#f6e6cf">متابعة بعد الإطلاق، وتحديثات، وتوسعة لفروع جديدة متى أردت.</p></div>
+  </div>
+  <div style="margin-top:14mm; border-top:1px solid rgba(255,215,154,.3); padding-top:8mm">
+    <div style="font-size:22pt; color:#fff; font-weight:700">لنحجز لك عرضًا حيًا للنظام</div>
+    <p style="color:#f2dcc0; font-size:13pt; margin-top:3mm">نزورك ونشغّل النظام على أجهزتك، ونريك كيف يبدو مطعمك عليه باسمه وشعاره.</p>
+    <table class="spec" style="margin-top:5mm; color:#fff7ea">
+      <tr><th style="color:#ffd79a; border-color:rgba(255,215,154,.25)">الشركة</th><td style="border-color:rgba(255,215,154,.25)">شركة ستارلايت للحلول التقنية · Starlight Tech Solutions</td></tr>
+      <tr><th style="color:#ffd79a; border-color:rgba(255,215,154,.25)">واتساب</th><td style="border-color:rgba(255,215,154,.25)"><span class="placeholder">ـــــــــــــــــــ</span></td></tr>
+      <tr><th style="color:#ffd79a; border-color:rgba(255,215,154,.25)">إنستغرام</th><td style="border-color:rgba(255,215,154,.25)"><span class="placeholder">ـــــــــــــــــــ</span></td></tr>
+      <tr><th style="color:#ffd79a; border-color:rgba(255,215,154,.25)">البريد الإلكتروني</th><td style="border-color:rgba(255,215,154,.25)"><span class="placeholder">ـــــــــــــــــــ</span></td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>من عائلة أنظمة ستارلايت: SMS · HIS · RMS</span><span>✦ Starlight</span></div>
+</section>
+
+</body>
+</html>
