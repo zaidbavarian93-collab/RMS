@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.rms.ui.components.BrandLogo
 import com.example.rms.ui.theme.AmberPrimary
 import com.example.rms.ui.theme.BrownDeep
 import com.example.rms.ui.theme.StatusDanger
@@ -49,7 +50,8 @@ fun LoginScreen(viewModel: CaptainViewModel) {
     val busy by viewModel.authBusy.collectAsState()
     val error by viewModel.authError.collectAsState()
 
-    AuthScaffold(title = "نظام إدارة المطاعم", subtitle = "تطبيق الكابتن — سجّل الدخول بحسابك") {
+    val brand by viewModel.brand.collectAsState()
+    AuthScaffold(title = brand.displayName, subtitle = "تطبيق الكابتن — سجّل الدخول بحسابك", logoUrl = brand.logoUrl) {
         error?.let { Text(text = it, color = StatusDanger, fontSize = 13.sp) }
         OutlinedTextField(
             value = username,
@@ -98,7 +100,8 @@ fun ChangePasswordScreen(viewModel: CaptainViewModel) {
     val busy by viewModel.authBusy.collectAsState()
     val error by viewModel.authError.collectAsState()
 
-    AuthScaffold(title = "تغيير كلمة المرور", subtitle = "يجب تغيير كلمة المرور قبل المتابعة") {
+    val brand by viewModel.brand.collectAsState()
+    AuthScaffold(title = "تغيير كلمة المرور", subtitle = "${brand.displayName} — يجب تغيير كلمة المرور قبل المتابعة", logoUrl = brand.logoUrl) {
         error?.let { Text(text = it, color = StatusDanger, fontSize = 13.sp) }
         for ((value, label, setter) in listOf(
             Triple(current, "كلمة المرور الحالية", { v: String -> current = v }),
@@ -123,7 +126,7 @@ fun ChangePasswordScreen(viewModel: CaptainViewModel) {
 }
 
 @Composable
-private fun AuthScaffold(title: String, subtitle: String, content: @Composable () -> Unit) {
+private fun AuthScaffold(title: String, subtitle: String, logoUrl: String?, content: @Composable () -> Unit) {
     Box(
         Modifier
             .fillMaxSize()
@@ -138,7 +141,7 @@ private fun AuthScaffold(title: String, subtitle: String, content: @Composable (
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("🍽️", fontSize = 36.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { BrandLogo(logoUrl, 72.dp) }
                 Text(title, fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                 Text(subtitle, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                 content()

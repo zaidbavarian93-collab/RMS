@@ -7,6 +7,9 @@ interface SessionStore {
     var baseUrl: String
     var token: String?
     var user: SessionUser?
+    // آخر هوية مطعم معروفة (تُعرض فورًا عند الفتح وبدون اتصال)
+    var brandName: String?
+    var brandLogo: String?
     fun clear()
 
     companion object {
@@ -18,5 +21,7 @@ interface SessionStore {
 class MemorySessionStore(override var baseUrl: String = SessionStore.DEFAULT_BASE_URL) : SessionStore {
     override var token: String? = null
     override var user: SessionUser? = null
+    override var brandName: String? = null
+    override var brandLogo: String? = null
     override fun clear() { token = null; user = null }
 }

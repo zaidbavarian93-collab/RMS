@@ -53,6 +53,7 @@ if (fs.existsSync(path.join(DIST, 'index.html'))) {
 
 app.use((err, req, res, next) => {
   if (err.status) return res.status(err.status).json({ message: err.message });
+  if (err.name === 'MulterError') return res.status(400).json({ message: err.code === 'LIMIT_FILE_SIZE' ? 'حجم الصورة أكبر من المسموح' : 'ملف غير صالح' });
   console.error(err);
   if (err.name === 'SequelizeForeignKeyConstraintError') return res.status(400).json({ message: 'مرجع غير صالح' });
   if (err.name === 'SequelizeUniqueConstraintError') return res.status(400).json({ message: 'قيمة مكررة' });
@@ -63,8 +64,14 @@ app.use((err, req, res, next) => {
 process.on('unhandledRejection', (err) => console.error('Unhandled rejection:', err));
 
 const PORT = process.env.PORT || 4000;
+// sync() لا يضيف أعمدة جديدة لجداول قائمة، فنضيفها هنا لقواعد البيانات المنشأة سابقًا
+async function migrate() {
+  await sequelize.query('ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS logo_path VARCHAR(255)');
+}
+
 if (require.main === module) {
   sequelize.sync()
+    .then(migrate)
     .then(() => {
       purgeOldKeys().catch(() => {});
       setInterval(() => purgeOldKeys().catch(() => {}), 6 * 3600 * 1000).unref();

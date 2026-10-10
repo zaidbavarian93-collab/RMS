@@ -46,6 +46,28 @@ class CaptainRepository(private val api: ApiClient, private val session: Session
         _user.value = null
     }
 
+    // ===== هوية المطعم =====
+
+    val cachedBrand: Brand get() = Brand(session.brandName, session.brandLogo)
+
+    // بعد الدخول: فرع المستخدم؛ قبله (أو قبل تغيير كلمة المرور الإجباري): الهوية العامة للمطعم
+    suspend fun branding(): Brand {
+        val u = _user.value
+        val json: JSONObject? = if (u?.restaurantId != null && !u.mustChangePassword && session.token != null) {
+            val arr = api.getArray("/restaurants")
+            (0 until arr.length()).map { arr.getJSONObject(it) }.firstOrNull { it.optString("id") == u.restaurantId } ?: arr.optJSONObject(0)
+        } else {
+            api.getObject("/public/branding")
+        }
+        val brand = Brand(
+            name = json?.optNullableString("name"),
+            logoUrl = json?.optNullableString("logo_path")?.let { session.baseUrl + it },
+        )
+        session.brandName = brand.name
+        session.brandLogo = brand.logoUrl
+        return brand
+    }
+
     // ===== الطاولات =====
 
     suspend fun tableMap(): TableMap = parseTableMap(api.getObject("/tables/map"))

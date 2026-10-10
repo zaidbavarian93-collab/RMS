@@ -8,6 +8,8 @@ Restaurant.init(
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
     name: { type: DataTypes.STRING, allowNull: false },
     slug: { type: DataTypes.STRING, allowNull: false, unique: true }, // يُستخدم في رابط المنيو العام /m/:slug
+    // الهوية: الاسم أعلاه + الشعار (يظهر في الواجهة وشاشة الدخول والمنيو العام والفاتورة وبطاقات QR)
+    logo_path: { type: DataTypes.STRING },
     phone: { type: DataTypes.STRING },
     address: { type: DataTypes.STRING },
     currency: { type: DataTypes.STRING, allowNull: false, defaultValue: 'IQD' },

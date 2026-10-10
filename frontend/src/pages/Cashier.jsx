@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import api, { errMsg } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useBrand } from '../context/BrandContext';
+import BrandMark from '../components/BrandMark';
 import { METHOD, ORDER_TYPE, itemPrice, money, timeAgo, usePoll, useToast } from '../utils/format';
 
 // الكاشير: كل الطلبات المفتوحة (الفواتير المطلوبة أولًا) + خصم + دفع متعدد الطرق + طباعة
 export default function Cashier() {
   const { user } = useAuth();
+  const brand = useBrand();
   const [orders, setOrders] = useState([]);
   const [sel, setSel] = useState(null);
   const [pays, setPays] = useState([{ method: 'cash', amount: '' }]);
@@ -57,6 +60,7 @@ export default function Cashier() {
       <section className="card receipt">
         {!order ? <p className="muted no-print">اختر طلبًا لعرض الفاتورة</p> : (
           <>
+            <div className="receipt-head"><BrandMark logo={brand.logo} size={56} /><b>{brand.name}</b><small>{new Date().toLocaleString('ar-IQ')}</small></div>
             <h3>فاتورة #{order.number} — {order.table ? `طاولة ${order.table.number}` : ORDER_TYPE[order.type]}</h3>
             <table>
               <thead><tr><th>الصنف</th><th>كمية</th><th>المبلغ</th></tr></thead>

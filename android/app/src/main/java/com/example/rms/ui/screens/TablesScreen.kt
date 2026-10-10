@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.rms.data.model.DiningTable
 import com.example.rms.data.model.minutesSince
+import com.example.rms.ui.components.BrandLogo
 import com.example.rms.ui.components.MutedText
 import com.example.rms.ui.components.money
 import com.example.rms.ui.components.tableColors
@@ -64,6 +65,7 @@ fun TablesScreen(viewModel: CaptainViewModel) {
     val map by viewModel.tableMap.collectAsState()
     val user by viewModel.user.collectAsState()
     val offline by viewModel.offline.collectAsState()
+    val brand by viewModel.brand.collectAsState()
     var floorId by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -72,9 +74,12 @@ fun TablesScreen(viewModel: CaptainViewModel) {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 title = {
-                    Column {
-                        Text("الطاولات", fontWeight = FontWeight.Bold)
-                        user?.let { MutedText(it.fullName) }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        BrandLogo(brand.logoUrl, 36.dp)
+                        Column {
+                            Text(brand.displayName, fontWeight = FontWeight.Bold, maxLines = 1)
+                            MutedText("الطاولات" + (user?.let { " · ${it.fullName}" } ?: ""))
+                        }
                     }
                 },
                 actions = {

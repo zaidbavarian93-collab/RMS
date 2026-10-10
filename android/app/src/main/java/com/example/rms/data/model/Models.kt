@@ -11,8 +11,14 @@ data class SessionUser(
     val fullName: String,
     val username: String,
     val role: String,
-    val mustChangePassword: Boolean
+    val mustChangePassword: Boolean,
+    val restaurantId: String? = null
 )
+
+// هوية المطعم كما تُضبط من إعدادات النظام (الاسم والشعار)
+data class Brand(val name: String?, val logoUrl: String?) {
+    val displayName: String get() = name?.takeIf { it.isNotBlank() } ?: "نظام إدارة المطاعم"
+}
 
 data class Floor(val id: String, val name: String)
 
@@ -121,7 +127,8 @@ fun parseUser(json: JSONObject) = SessionUser(
     fullName = json.optString("full_name"),
     username = json.optString("username"),
     role = json.optString("role"),
-    mustChangePassword = json.optBoolean("must_change_password", false)
+    mustChangePassword = json.optBoolean("must_change_password", false),
+    restaurantId = json.optNullableString("restaurant_id")
 )
 
 fun parseOrderItem(j: JSONObject) = OrderItem(

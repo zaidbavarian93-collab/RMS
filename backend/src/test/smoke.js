@@ -142,6 +142,28 @@ const eq = (a, b, m) => assert.equal(Number(a), Number(b), m);
     assert.equal((await call('POST', '/api/orders', { token: cap, body: offlineBody, key: 'bad key!' })).status, 400);
     assert.equal((await call('GET', '/api/nope', { token: cap })).status, 404);
 
+    // هوية المطعم: رفع الشعار وتغيير الاسم وظهورهما في المسار العام
+    const rid = (await call('GET', '/api/restaurants', { token: mgr })).data[0].id;
+    const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+    const up = async (token, blob, name) => {
+      const fd = new FormData(); fd.append('logo', blob, name);
+      const r = await fetch(`${base}/api/restaurants/${rid}/logo`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      return { status: r.status, data: await r.json() };
+    };
+    assert.equal((await up(cap, new Blob([png], { type: 'image/png' }), 'l.png')).status, 403, 'الكابتن لا يغيّر الشعار');
+    assert.equal((await up(mgr, new Blob(['<svg onload=alert(1)>'], { type: 'image/svg+xml' }), 'x.svg')).status, 400, 'SVG مرفوض');
+    const logo = await up(mgr, new Blob([png], { type: 'image/png' }), 'evil.php');
+    assert.equal(logo.status, 200); assert.match(logo.data.logo_path, /^\/uploads\/branding\/[\w-]+\.png$/, 'الامتداد من نوع الملف');
+    assert.equal((await fetch(base + logo.data.logo_path)).status, 200, 'الشعار متاح');
+    assert.equal((await call('PUT', `/api/restaurants/${rid}`, { token: mgr, body: { name: 'مطعم الريف' } })).data.name, 'مطعم الريف');
+    assert.equal((await call('PUT', `/api/restaurants/${rid}`, { token: mgr, body: { name: '  ' } })).status, 400, 'الاسم مطلوب');
+    const brand = (await call('GET', '/api/public/branding')).data;
+    assert.equal(brand.name, 'مطعم الريف'); assert.equal(brand.logo_path, logo.data.logo_path);
+    assert.equal((await call('GET', '/api/public/menu/nakheel')).data.restaurant.logo_path, logo.data.logo_path);
+    const del = await call('DELETE', `/api/restaurants/${rid}/logo`, { token: mgr });
+    assert.equal(del.data.logo_path, null);
+    assert.equal((await fetch(base + logo.data.logo_path)).status, 404, 'الملف القديم حُذف');
+
     // سجل التدقيق
     const logs = (await call('GET', '/api/audit-logs', { token: mgr })).data;
     assert.ok(logs.some((l) => /إلغاء/.test(l.description)) && logs.some((l) => /دفع طلب/.test(l.description)));

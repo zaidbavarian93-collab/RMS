@@ -3,6 +3,7 @@ package com.example.rms.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.rms.data.model.Brand
 import com.example.rms.data.model.CartLine
 import com.example.rms.data.model.MenuCategory
 import com.example.rms.data.model.MenuItem
@@ -69,6 +70,19 @@ class CaptainViewModel(private val repository: CaptainRepository) : ViewModel() 
 
     fun consumeMessage() { _message.value = null }
 
+    // ===== هوية المطعم (الاسم والشعار من إعدادات النظام) =====
+    private val _brand = MutableStateFlow(repository.cachedBrand)
+    val brand: StateFlow<Brand> = _brand.asStateFlow()
+    private var ticksSinceBrand = 0
+
+    fun refreshBrand() {
+        viewModelScope.launch {
+            try { _brand.value = repository.branding() } catch (_: ApiException) { /* نبقي آخر هوية محفوظة */ }
+        }
+    }
+
+    init { refreshBrand() }
+
     // ===== الدخول =====
 
     fun login(serverUrl: String, username: String, password: String) {
@@ -78,6 +92,7 @@ class CaptainViewModel(private val repository: CaptainRepository) : ViewModel() 
             _authError.value = null
             try {
                 repository.login(serverUrl.trim().trimEnd('/'), username.trim(), password)
+                refreshBrand()
             } catch (e: ApiException) {
                 _authError.value = e.message
             } finally {
@@ -96,6 +111,7 @@ class CaptainViewModel(private val repository: CaptainRepository) : ViewModel() 
             _authError.value = null
             try {
                 repository.changePassword(current, new)
+                refreshBrand()
             } catch (e: ApiException) {
                 _authError.value = e.message
             } finally {
@@ -120,6 +136,8 @@ class CaptainViewModel(private val repository: CaptainRepository) : ViewModel() 
         if (u.mustChangePassword || !isAllowedRole) return
         try {
             _tableMap.value = repository.tableMap()
+            // تحديث الهوية كل دقيقة تقريبًا حتى يظهر تغيير الاسم/الشعار من الإعدادات
+            if (++ticksSinceBrand >= 12) { ticksSinceBrand = 0; refreshBrand() }
             if (_menu.value.isEmpty()) _menu.value = repository.menu()
             _selectedTableId.value?.let { loadOrder(it) }
             _offline.value = false

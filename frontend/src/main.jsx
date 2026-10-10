@@ -3,12 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
-import { ThemeProvider } from './context/ThemeContext.jsx';
-import { initGlassShine } from './utils/motion.js';
+import { BrandProvider } from './context/BrandContext.jsx';
 import { startOfflineSync } from './utils/offline.js';
 import './index.css';
 
-initGlassShine();
 startOfflineSync();
 
 // عامل الخدمة: يجعل النظام يفتح ويعرض آخر البيانات بدون اتصال، ويسمح بتثبيته كتطبيق.
@@ -20,11 +18,11 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <BrandProvider>
           <App />
-        </AuthProvider>
-      </ThemeProvider>
+        </BrandProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
