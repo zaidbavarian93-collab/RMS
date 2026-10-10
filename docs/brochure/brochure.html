@@ -94,6 +94,21 @@ table.spec.compare td:last-child { color: var(--deep); font-weight: 700; }
 .stat-strip b { display: block; font-size: 22pt; color: var(--amber); }
 .stat-strip span { font-size: 10.5pt; color: var(--muted); }
 .placeholder { color: #a5866a; border-bottom: 1px dashed #c9a882; padding: 0 8mm; }
+
+/* زخارف الخلفية */
+.deco { position: absolute; pointer-events: none; z-index: 0; background-repeat: no-repeat; background-size: contain; background-position: center; }
+.page > :not(.deco):not(.run-head):not(.run-foot):not(.hero):not(.phone):not(.foot) { position: relative; z-index: 1; }
+.run-head, .run-foot, .hero, .phone, .foot { z-index: 2; }
+.deco-wave { left: 0; right: 0; bottom: 0; height: 60mm; background: url(deco/wave.svg) bottom / 100% 100% no-repeat; }
+.deco-wave.mirror { transform: scaleX(-1); }
+.deco-wave.low { height: 44mm; opacity: .75; }
+.deco-stars { width: 72mm; height: 54mm; background-image: url(deco/stars.svg); }
+.deco-doodles { width: 92mm; height: 92mm; background-image: url(deco/doodles.svg); opacity: .075; }
+.deco-num { top: 15mm; left: 14mm; font: 700 118pt/1 "Liberation Serif", serif; color: transparent; -webkit-text-stroke: 1.3px rgba(217, 119, 6, .3); letter-spacing: -.02em; }
+.deco-ring { border-radius: 50%; border: 1.2px dashed rgba(217, 119, 6, .28); }
+.cover .deco-wave { opacity: .4; }
+.cover .deco-doodles { filter: invert(1) sepia(1) saturate(3); opacity: .1; }
+.cover .deco-stars { opacity: 1; filter: brightness(1.6); }
 </style>
 </head>
 <body>
@@ -478,5 +493,22 @@ table.spec.compare td:last-child { color: var(--deep); font-weight: 700; }
   <div class="foot"><span>من عائلة أنظمة ستارلايت: SMS · HIS · RMS</span><span>✦ Starlight</span></div>
 </section>
 
+<script>
+(() => {
+  const pages = [...document.querySelectorAll('.page')];
+  const starPos = [['top:30mm','left:6mm'], ['bottom:40mm','left:8mm'], ['top:118mm','left:-6mm'], ['bottom:62mm','right:4mm'], ['top:34mm','left:30mm']];
+  const doodlePos = [['top:96mm','left:-18mm'], ['bottom:30mm','right:-20mm'], ['top:44mm','right:-26mm'], ['bottom:70mm','left:-22mm'], ['top:150mm','right:-24mm']];
+  const ringPos = [['width:64mm','height:64mm','top:-22mm','left:-20mm'], ['width:90mm','height:90mm','bottom:-34mm','right:-30mm'], ['width:52mm','height:52mm','top:60mm','left:-30mm']];
+  const add = (pg, cls, style) => { const d = document.createElement('div'); d.className = 'deco ' + cls; if (style) d.style.cssText = style.join(';'); pg.prepend(d); return d; };
+  pages.forEach((pg, i) => {
+    const dark = pg.classList.contains('cover');
+    add(pg, 'deco-wave' + (i % 2 ? ' mirror' : '') + (i % 3 === 2 ? ' low' : ''));
+    add(pg, 'deco-ring', ringPos[i % ringPos.length]);
+    add(pg, 'deco-doodles', doodlePos[i % doodlePos.length]);
+    add(pg, 'deco-stars', dark ? ['top:12mm','left:10mm'] : starPos[i % starPos.length]);
+    if (!dark) add(pg, 'deco-num').textContent = String(i + 1).padStart(2, '0');
+  });
+})();
+</script>
 </body>
 </html>
