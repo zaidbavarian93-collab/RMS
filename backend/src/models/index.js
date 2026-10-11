@@ -23,6 +23,7 @@ MenuItem.belongsTo(MenuCategory, { foreignKey: 'category_id' });
 Order.belongsTo(DiningTable, { as: 'table', foreignKey: 'table_id' });
 DiningTable.hasMany(Order, { foreignKey: 'table_id' });
 Order.belongsTo(User, { as: 'captain', foreignKey: 'captain_id' });
+Order.belongsTo(User, { as: 'cashier', foreignKey: 'cashier_id' });
 Order.hasMany(OrderItem, { as: 'items', foreignKey: 'order_id' });
 OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
 Order.hasMany(Payment, { as: 'payments', foreignKey: 'order_id' });

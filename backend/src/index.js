@@ -22,6 +22,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/tables', require('./routes/tables'));
 app.use('/api/menu', require('./routes/menu'));
 app.use('/api/orders', require('./routes/orders'));
+app.use('/api/invoices', require('./routes/invoices'));
 app.use('/api/kitchen', require('./routes/kitchen'));
 app.use('/api/calls', require('./routes/calls'));
 app.use('/api/inventory', require('./routes/inventory'));
@@ -67,6 +68,10 @@ const PORT = process.env.PORT || 4000;
 // sync() لا يضيف أعمدة جديدة لجداول قائمة، فنضيفها هنا لقواعد البيانات المنشأة سابقًا
 async function migrate() {
   await sequelize.query('ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS logo_path VARCHAR(255)');
+  await sequelize.query('ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS tax_number VARCHAR(40)');
+  await sequelize.query('ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS invoice_footer VARCHAR(300)');
+  await sequelize.query("ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS receipt_width VARCHAR(4) NOT NULL DEFAULT '80'");
+  await sequelize.query('ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS auto_print BOOLEAN NOT NULL DEFAULT true');
 }
 
 if (require.main === module) {

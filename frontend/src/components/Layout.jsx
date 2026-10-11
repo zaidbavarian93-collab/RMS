@@ -14,8 +14,9 @@ const NAV_GROUPS = [
     items: [
       { to: '/captain', label: 'الكابتن - الطاولات', icon: '🧑‍🍳', roles: ['owner', 'manager', 'cashier', 'captain'] },
       { to: '/kitchen', label: 'شاشة المطبخ', icon: '🍳', roles: [...ADMIN, 'kitchen', 'captain', 'cashier'] },
-      { to: '/cashier', label: 'الكاشير والفواتير', icon: '💵', roles: [...ADMIN, 'cashier'] },
-      { to: '/orders', label: 'سجل الطلبات', icon: '🧾', roles: ['owner', 'manager', 'cashier', 'captain'] },
+      { to: '/cashier', label: 'الكاشير', icon: '💵', roles: [...ADMIN, 'cashier'] },
+      { to: '/invoices', label: 'الفواتير', icon: '🧾', roles: [...ADMIN, 'cashier'] },
+      { to: '/orders', label: 'سجل الطلبات', icon: '📋', roles: ['owner', 'manager', 'cashier', 'captain'] },
     ],
   },
   {

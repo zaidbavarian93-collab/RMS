@@ -26,9 +26,15 @@ router.put('/:id', authorize('owner', 'manager'), async (req, res) => {
   if (req.user.role !== 'owner' && req.params.id !== req.user.restaurant_id) return res.status(403).json({ message: 'لا تملك صلاحية' });
   const r = await Restaurant.findByPk(req.params.id);
   if (!r) return res.status(404).json({ message: 'الفرع غير موجود' });
-  const { name, phone, address, currency, tax_percent, service_percent, qr_ordering_enabled } = req.body;
+  const { name, phone, address, currency, tax_percent, service_percent, qr_ordering_enabled, tax_number, invoice_footer, receipt_width, auto_print } = req.body;
   if (name !== undefined && !String(name).trim()) return res.status(400).json({ message: 'اسم المطعم مطلوب' });
-  await r.update({ name: name === undefined ? undefined : String(name).trim().slice(0, 80), phone, address, currency, tax_percent, service_percent, qr_ordering_enabled });
+  if (receipt_width !== undefined && !['58', '80'].includes(String(receipt_width))) return res.status(400).json({ message: 'عرض ورق الإيصال يجب أن يكون 58 أو 80 مم' });
+  const clip = (v, n) => (v === undefined ? undefined : v === null ? null : String(v).trim().slice(0, n));
+  await r.update({
+    name: name === undefined ? undefined : String(name).trim().slice(0, 80), phone, address, currency, tax_percent, service_percent, qr_ordering_enabled,
+    tax_number: clip(tax_number, 40), invoice_footer: clip(invoice_footer, 300),
+    receipt_width: receipt_width === undefined ? undefined : String(receipt_width), auto_print: auto_print === undefined ? undefined : Boolean(auto_print),
+  });
   await logAudit({ req, action: 'update', entityType: 'Restaurant', entityId: r.id, description: `تعديل إعدادات: ${r.name}` });
   res.json(r);
 });

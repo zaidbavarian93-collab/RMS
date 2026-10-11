@@ -84,6 +84,18 @@ export default function Settings() {
         </div>
         <label className="check"><input type="checkbox" checked={r.qr_ordering_enabled} onChange={(e) => set('qr_ordering_enabled', e.target.checked)} /> السماح للزبون بالطلب من المنيو عبر QR (يُعتمد من الكابتن)</label>
         <p className="muted">رابط المنيو العام: <span dir="ltr">/m/{r.slug}</span></p>
+
+        <h3 style={{ marginTop: 18 }}>الفواتير والطباعة</h3>
+        <div className="form-grid">
+          <div className="field"><label>الرقم الضريبي (يظهر على الفاتورة)</label><input value={r.tax_number || ''} maxLength={40} onChange={(e) => set('tax_number', e.target.value)} /></div>
+          <div className="field"><label>عرض ورق الإيصال الحراري</label>
+            <select value={r.receipt_width || '80'} onChange={(e) => set('receipt_width', e.target.value)}>
+              <option value="80">80 مم (الأكثر شيوعًا)</option>
+              <option value="58">58 مم (طابعات صغيرة)</option>
+            </select></div>
+        </div>
+        <div className="field"><label>ملاحظة أسفل الفاتورة</label><input value={r.invoice_footer || ''} maxLength={300} placeholder="مثال: شكرًا لزيارتكم — نسعد بخدمتكم دائمًا" onChange={(e) => set('invoice_footer', e.target.value)} /></div>
+        <label className="check"><input type="checkbox" checked={r.auto_print ?? true} onChange={(e) => set('auto_print', e.target.checked)} /> طباعة الإيصال تلقائيًا بعد الدفع</label>
         <button className="btn">حفظ (يشمل اسم المطعم)</button>
       </form>
       {toast && <div className={`toast ${toast.kind}`}>{toast.text}</div>}

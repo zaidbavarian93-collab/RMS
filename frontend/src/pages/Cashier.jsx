@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useBrand } from '../context/BrandContext';
 import BrandMark from '../components/BrandMark';
 import { METHOD, ORDER_TYPE, itemPrice, money, timeAgo, usePoll, useToast } from '../utils/format';
+import { fetchInvoice, printInvoice } from '../utils/invoice';
 
 // الكاشير: كل الطلبات المفتوحة (الفواتير المطلوبة أولًا) + خصم + دفع متعدد الطرق + طباعة
 export default function Cashier() {
@@ -29,12 +30,18 @@ export default function Cashier() {
   }
   async function pay() {
     try {
-      await api.post(`/orders/${order.id}/pay`, { payments: pays.filter((p) => Number(p.amount) > 0).map((p) => ({ method: p.method, amount: Number(p.amount) })) });
+      const id = order.id;
+      await api.post(`/orders/${id}/pay`, { payments: pays.filter((p) => Number(p.amount) > 0).map((p) => ({ method: p.method, amount: Number(p.amount) })) });
       show('تم الدفع ✔');
-      window.print();
       setSel(null);
       load();
+      // طباعة الإيصال تلقائيًا إن كانت مفعّلة في الإعدادات (يمكن إعادة الطباعة من صفحة الفواتير)
+      const inv = await fetchInvoice(id).catch(() => null);
+      if (inv?.restaurant?.auto_print) printInvoice(inv, 'receipt');
     } catch (e) { show(errMsg(e), 'err'); }
+  }
+  async function preBill() {
+    try { printInvoice(await fetchInvoice(order.id), 'receipt'); } catch (e) { show(errMsg(e), 'err'); }
   }
   async function cancelOrder() {
     const reason = window.prompt('سبب إلغاء الطلب؟');
@@ -92,7 +99,8 @@ export default function Cashier() {
               <button className="btn small secondary" onClick={() => setPays([...pays, { method: 'card', amount: '' }])}>+ تقسيم الدفع</button>
               <p>المدفوع: <b>{money(paid)}</b> · {paid >= Number(order.total) ? <>الباقي للزبون: <b>{money(paid - Number(order.total))}</b></> : <span className="neg">ناقص {money(Number(order.total) - paid)}</span>}</p>
               <div className="btn-row">
-                <button className="btn" disabled={paid < Number(order.total)} onClick={pay}>✔ تأكيد الدفع وطباعة</button>
+                <button className="btn" disabled={paid < Number(order.total)} onClick={pay}>✔ تأكيد الدفع</button>
+                <button className="btn secondary" onClick={preBill}>🖨 فاتورة مبدئية</button>
                 <button className="btn secondary" onClick={discount}>خصم</button>
                 {['owner', 'manager'].includes(user.role) && <button className="btn danger" onClick={cancelOrder}>إلغاء الطلب</button>}
               </div>
