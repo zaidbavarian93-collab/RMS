@@ -22,50 +22,50 @@
   },
   {
    "start": 34.14,
-   "dur": 12.85,
+   "dur": 13.53,
    "voice": 34.69
   },
   {
-   "start": 46.19,
+   "start": 46.87,
    "dur": 10.77,
-   "voice": 46.74
+   "voice": 47.42
   },
   {
-   "start": 56.16,
+   "start": 56.83,
    "dur": 9.82,
-   "voice": 56.71
+   "voice": 57.38
   },
   {
-   "start": 65.18,
-   "dur": 14.05,
-   "voice": 65.73
+   "start": 65.85,
+   "dur": 15.5,
+   "voice": 66.4
   },
   {
-   "start": 78.43,
+   "start": 80.55,
    "dur": 9.7,
-   "voice": 78.98
+   "voice": 81.1
   },
   {
-   "start": 87.32,
+   "start": 89.44,
    "dur": 9.84,
-   "voice": 87.87
+   "voice": 89.99
   },
   {
-   "start": 96.37,
+   "start": 98.49,
    "dur": 12.09,
-   "voice": 96.92
+   "voice": 99.04
   },
   {
-   "start": 107.66,
+   "start": 109.78,
    "dur": 4.75,
-   "voice": 108.21
+   "voice": 110.33
   },
   {
-   "start": 111.61,
+   "start": 113.73,
    "dur": 10.88,
-   "voice": 112.16
+   "voice": 114.28
   }
  ],
- "total": 122.49,
+ "total": 124.61,
  "over": 0.8
 }
