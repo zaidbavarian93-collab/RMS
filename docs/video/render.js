@@ -3,13 +3,16 @@ const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const path = require('path');
 
-const args = process.argv.slice(2);
+// --vertical: النسخة العمودية 1080×1920 (إنستغرام) من explainer-vertical.html
+const vertical = process.argv.includes('--vertical');
+const args = process.argv.slice(2).filter((a) => a !== '--vertical');
 const FPS = 30;
-const html = 'file://' + path.join(__dirname, 'explainer.html');
+const html = 'file://' + path.join(__dirname, vertical ? 'explainer-vertical.html' : 'explainer.html');
+const viewport = vertical ? { width: 1080, height: 1920 } : { width: 1920, height: 1080 };
 
 (async () => {
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
   page.on('pageerror', (e) => console.error('PAGE ERROR:', e.message));
   await page.goto(html, { waitUntil: 'networkidle' });
   await page.evaluate(async () => { await document.fonts.ready; await Promise.all([...document.images].map((i) => i.decode().catch(() => {}))); });
@@ -17,7 +20,7 @@ const html = 'file://' + path.join(__dirname, 'explainer.html');
   if (args[0] === '--stills') {
     for (const t of args.slice(1).map(Number)) {
       await page.evaluate((t) => window.seek(t), t);
-      await page.screenshot({ path: path.join(__dirname, 'stills', `s${String(t).padStart(5, '0')}.jpg`), type: 'jpeg', quality: 80 });
+      await page.screenshot({ path: path.join(__dirname, 'stills', `${vertical ? 'v' : 's'}${String(t).padStart(5, '0')}.jpg`), type: 'jpeg', quality: 80 });
     }
     await browser.close();
     return;
