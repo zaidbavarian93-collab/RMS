@@ -4,3 +4,6 @@ backend/uploads/
 frontend/dist/
 .idea/
 .DS_Store
+docs/video/*.wav
+docs/video/silent.mp4
+docs/video/stills/
