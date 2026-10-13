@@ -3,10 +3,13 @@ import QRCode from 'qrcode';
 import api, { errMsg } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { TABLE_STATUS, useToast } from '../utils/format';
+import { useBrand } from '../context/BrandContext';
+import BrandMark from '../components/BrandMark';
 
 // إدارة القاعات والطاولات + توليد وطباعة رمز QR لكل طاولة (يفتح المنيو العام مربوطًا بالطاولة)
 export default function TablesAdmin() {
   const { user } = useAuth();
+  const brand = useBrand();
   const [map, setMap] = useState({ floors: [], tables: [] });
   const [slug, setSlug] = useState('');
   const [qrs, setQrs] = useState({});
@@ -52,6 +55,7 @@ export default function TablesAdmin() {
       <div className="qr-grid">
         {map.floors.map((f) => map.tables.filter((t) => t.floor_id === f.id).map((t) => (
           <div className="qr-card" key={t.id}>
+            <div className="qr-brand"><BrandMark logo={brand.logo} size={34} /><b>{brand.name}</b></div>
             <h2>طاولة {t.number}</h2>
             {qrs[t.id] ? <img src={qrs[t.id]} alt={`QR ${t.number}`} /> : <div style={{ height: 220 }} />}
             <small>امسح للاطلاع على المنيو والطلب · {f.name}</small>

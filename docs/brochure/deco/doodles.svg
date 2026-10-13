@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520">
+  <g fill="none" stroke="#1f3354" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- طبق وأدوات -->
+    <g transform="translate(70 80) rotate(-12)"><circle r="30"/><circle r="20"/><path d="M-46 -26 V26 M-52 -26 V-10 Q-46 -2 -40 -10 V-26 M46 -26 Q56 -8 46 4 V26"/></g>
+    <!-- فنجان -->
+    <g transform="translate(260 60) rotate(8)"><path d="M-22 -8 H18 V12 Q18 28 -2 28 Q-22 28 -22 12Z M18 0 Q30 0 30 10 Q30 18 18 18 M-30 34 H26"/><path d="M-10 -20 Q-4 -28 -10 -36 M2 -20 Q8 -28 2 -36"/></g>
+    <!-- قبعة الطاهي -->
+    <g transform="translate(430 120) rotate(-8)"><path d="M-22 10 Q-40 6 -36 -10 Q-32 -26 -14 -22 Q-8 -38 8 -36 Q24 -36 24 -20 Q42 -22 40 -4 Q38 10 22 10 Z M-20 10 V28 H20 V10 M-20 20 H20"/></g>
+    <!-- إيصال -->
+    <g transform="translate(110 270) rotate(10)"><path d="M-20 -32 H20 V32 L13 26 L6 32 L0 26 L-6 32 L-13 26 L-20 32Z M-12 -20 H12 M-12 -10 H12 M-12 0 H6 M-12 12 H12"/></g>
+    <!-- QR -->
+    <g transform="translate(300 250) rotate(-6)"><rect x="-30" y="-30" width="60" height="60" rx="6"/><rect x="-22" y="-22" width="16" height="16" rx="2"/><rect x="6" y="-22" width="16" height="16" rx="2"/><rect x="-22" y="6" width="16" height="16" rx="2"/><path d="M8 8 H14 M20 8 V14 M8 20 H22 M14 14 V22"/></g>
+    <!-- ورقة نعناع -->
+    <g transform="translate(460 300) rotate(30)"><path d="M0 -30 Q24 -10 0 30 Q-24 -10 0 -30Z M0 -22 V26 M0 -6 L-9 -14 M0 6 L9 -2"/></g>
+    <!-- جرس الخدمة -->
+    <g transform="translate(90 440) rotate(-10)"><path d="M-30 18 H30 M-24 18 Q-24 -16 0 -16 Q24 -16 24 18 M0 -16 V-24 M-6 -26 H6"/></g>
+    <!-- كأس -->
+    <g transform="translate(260 430) rotate(12)"><path d="M-16 -30 H16 Q16 0 0 4 Q-16 0 -16 -30Z M0 4 V28 M-12 28 H12 M-14 -14 H14"/></g>
+    <!-- هاتف -->
+    <g transform="translate(430 450) rotate(-14)"><rect x="-18" y="-32" width="36" height="64" rx="7"/><path d="M-6 -24 H6 M-4 24 H4"/></g>
+  </g>
+</svg>

@@ -8,6 +8,7 @@ import Captain from './pages/Captain';
 import Kitchen from './pages/Kitchen';
 import Cashier from './pages/Cashier';
 import Orders from './pages/Orders';
+import Invoices from './pages/Invoices';
 import MenuAdmin from './pages/MenuAdmin';
 import TablesAdmin from './pages/TablesAdmin';
 import Inventory from './pages/Inventory';
@@ -41,6 +42,7 @@ export default function App() {
       <Route path="/captain" element={<Protected roles={FLOOR}><Captain /></Protected>} />
       <Route path="/kitchen" element={<Protected roles={[...ADMIN, 'kitchen', 'captain', 'cashier']}><Kitchen /></Protected>} />
       <Route path="/cashier" element={<Protected roles={[...ADMIN, 'cashier']}><Cashier /></Protected>} />
+      <Route path="/invoices" element={<Protected roles={[...ADMIN, 'cashier']}><Invoices /></Protected>} />
       <Route path="/orders" element={<Protected roles={FLOOR}><Orders /></Protected>} />
       <Route path="/menu" element={<Protected roles={ADMIN}><MenuAdmin /></Protected>} />
       <Route path="/tables" element={<Protected roles={ADMIN}><TablesAdmin /></Protected>} />

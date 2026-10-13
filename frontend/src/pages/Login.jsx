@@ -3,9 +3,12 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { errMsg } from '../api/client';
 import { HOME_BY_ROLE } from '../App';
+import { useBrand } from '../context/BrandContext';
+import BrandMark from '../components/BrandMark';
 
 export default function Login() {
   const { user, login } = useAuth();
+  const brand = useBrand();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -31,13 +34,18 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-box">
-        <div className="login-brand"><span className="logo-dot">🍽️</span><h1>نظام إدارة المطاعم</h1></div>
+        <div className="login-brand">
+          <BrandMark logo={brand.logo} size={72} />
+          <h1>{brand.name}</h1>
+          <small className="muted">تسجيل الدخول إلى نظام إدارة المطعم</small>
+        </div>
         <form onSubmit={submit}>
           {error && <div className="error">{error}</div>}
           <div className="field"><label>اسم المستخدم</label><input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus autoComplete="username" /></div>
           <div className="field"><label>كلمة المرور</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" /></div>
           <button className="btn" style={{ width: '100%' }} disabled={loading}>{loading ? '...' : 'دخول'}</button>
         </form>
+        <div className="starlight-credit on-glass"><img src="/icons/starlight-logo.png" alt="Starlight للحلول التقنية" /><small>RMS by Starlight</small></div>
       </div>
     </div>
   );

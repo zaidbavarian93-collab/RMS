@@ -4,10 +4,10 @@ const assert = require('assert');
 const app = require('../index');
 
 let base;
-async function call(method, url, { token, body } = {}) {
+async function call(method, url, { token, body, key } = {}) {
   const res = await fetch(base + url, {
     method,
-    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(key ? { 'Idempotency-Key': key } : {}) },
     body: body ? JSON.stringify(body) : undefined,
   });
   return { status: res.status, data: await res.json().catch(() => null) };
@@ -125,9 +125,71 @@ const eq = (a, b, m) => assert.equal(Number(a), Number(b), m);
     const live = (await call('GET', '/api/reports/live', { token: mgr })).data;
     eq(live.tables.total, 18);
 
+    // منع التكرار: نفس الطلب المحفوظ أثناء انقطاع الاتصال يُرسل مرتين → يُنفَّذ مرة واحدة فقط
+    const t2 = (await call('GET', '/api/tables/map', { token: cap })).data.tables.find((t) => t.number === '2');
+    const offlineBody = { type: 'dine_in', table_id: t2.id, guests: 2, items: [{ menu_item_id: kebab.id, quantity: 1 }] };
+    const first = await call('POST', '/api/orders', { token: cap, body: offlineBody, key: 'offline-test-0001' });
+    const again = await call('POST', '/api/orders', { token: cap, body: offlineBody, key: 'offline-test-0001' });
+    assert.equal(first.status, 201); assert.equal(again.status, 201);
+    assert.equal(again.data.id, first.data.id, 'نفس الطلب');
+    assert.equal(again.data.items.length, 1, 'الصنف لم يتكرر');
+    const s1 = await call('POST', `/api/orders/${first.data.id}/send`, { token: cap, key: 'offline-test-0001.send' });
+    const s2 = await call('POST', `/api/orders/${first.data.id}/send`, { token: cap, key: 'offline-test-0001.send' });
+    assert.equal(s1.status, 200); assert.equal(s2.status, 200, 'إعادة الإرسال تعيد النتيجة المحفوظة');
+    // نفس المفتاح من مستخدم آخر لا يتشارك النتيجة
+    const other = await call('POST', '/api/orders', { token: cash, body: { ...offlineBody, items: [{ menu_item_id: tea.id }] }, key: 'offline-test-0001' });
+    assert.equal(other.data.items.length, 2, 'مفتاح مستخدم آخر مستقل');
+    assert.equal((await call('POST', '/api/orders', { token: cap, body: offlineBody, key: 'bad key!' })).status, 400);
+    assert.equal((await call('GET', '/api/nope', { token: cap })).status, 404);
+
+    // هوية المطعم: رفع الشعار وتغيير الاسم وظهورهما في المسار العام
+    const rid = (await call('GET', '/api/restaurants', { token: mgr })).data[0].id;
+    const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+    const up = async (token, blob, name) => {
+      const fd = new FormData(); fd.append('logo', blob, name);
+      const r = await fetch(`${base}/api/restaurants/${rid}/logo`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      return { status: r.status, data: await r.json() };
+    };
+    assert.equal((await up(cap, new Blob([png], { type: 'image/png' }), 'l.png')).status, 403, 'الكابتن لا يغيّر الشعار');
+    assert.equal((await up(mgr, new Blob(['<svg onload=alert(1)>'], { type: 'image/svg+xml' }), 'x.svg')).status, 400, 'SVG مرفوض');
+    const logo = await up(mgr, new Blob([png], { type: 'image/png' }), 'evil.php');
+    assert.equal(logo.status, 200); assert.match(logo.data.logo_path, /^\/uploads\/branding\/[\w-]+\.png$/, 'الامتداد من نوع الملف');
+    assert.equal((await fetch(base + logo.data.logo_path)).status, 200, 'الشعار متاح');
+    assert.equal((await call('PUT', `/api/restaurants/${rid}`, { token: mgr, body: { name: 'مطعم الريف' } })).data.name, 'مطعم الريف');
+    assert.equal((await call('PUT', `/api/restaurants/${rid}`, { token: mgr, body: { name: '  ' } })).status, 400, 'الاسم مطلوب');
+    const brand = (await call('GET', '/api/public/branding')).data;
+    assert.equal(brand.name, 'مطعم الريف'); assert.equal(brand.logo_path, logo.data.logo_path);
+    assert.equal((await call('GET', '/api/public/menu/nakheel')).data.restaurant.logo_path, logo.data.logo_path);
+    const del = await call('DELETE', `/api/restaurants/${rid}/logo`, { token: mgr });
+    assert.equal(del.data.logo_path, null);
+    assert.equal((await fetch(base + logo.data.logo_path)).status, 404, 'الملف القديم حُذف');
+
+    // الفواتير: السجل، فاتورة واحدة للطباعة، إعدادات الفاتورة، وتصدير Excel (CSV)
+    const day = new Date().toLocaleDateString('en-CA');
+    assert.equal((await call('GET', '/api/invoices', { token: cap })).status, 403, 'الكابتن لا يرى سجل الفواتير');
+    const invs = (await call('GET', `/api/invoices?from=${day}&to=${day}`, { token: cash })).data;
+    assert.ok(invs.invoices.length >= 1 && invs.invoices.every((o) => o.status === 'paid'), 'الفواتير المدفوعة فقط');
+    const firstInv = invs.invoices[invs.invoices.length - 1];
+    eq(invs.totals.total, invs.invoices.reduce((t, o) => t + Number(o.total), 0), 'مجموع الفواتير');
+    assert.equal((await call('GET', `/api/invoices?from=${day}&to=${day}&q=${firstInv.number}`, { token: cash })).data.invoices.length, 1, 'البحث برقم الفاتورة');
+    assert.equal((await call('PUT', `/api/restaurants/${rid}`, { token: mgr, body: { receipt_width: '100' } })).status, 400, 'عرض ورق غير مدعوم');
+    await call('PUT', `/api/restaurants/${rid}`, { token: mgr, body: { tax_number: '300123456', invoice_footer: 'شكرًا لزيارتكم', receipt_width: '58', auto_print: false } });
+    const one = (await call('GET', `/api/invoices/${firstInv.id}`, { token: cash })).data;
+    assert.equal(one.invoice.id, firstInv.id); assert.ok(one.invoice.payments.length >= 1 && one.invoice.cashier?.full_name, 'الدفعات واسم الكاشير');
+    assert.equal(one.restaurant.tax_number, '300123456'); assert.equal(one.restaurant.receipt_width, '58'); assert.equal(one.restaurant.auto_print, false);
+    const csv = await fetch(`${base}/api/invoices/export?from=${day}&to=${day}`, { headers: { Authorization: `Bearer ${cash}` } });
+    assert.equal(csv.status, 200); assert.match(csv.headers.get('content-disposition'), /attachment; filename="invoices_/);
+    const raw = new Uint8Array(await csv.arrayBuffer());
+    assert.deepEqual([...raw.slice(0, 3)], [0xef, 0xbb, 0xbf], 'BOM ليفتح Excel العربية');
+    const csvText = new TextDecoder().decode(raw); assert.ok(csvText.includes('رقم الفاتورة') && csvText.includes('الإجمالي'));
+    assert.equal(csvText.trim().split('\r\n').length, invs.invoices.length + 2, 'سطر لكل فاتورة + العناوين + الإجمالي');
+    const csvItems = await (await fetch(`${base}/api/invoices/export?from=${day}&to=${day}&detail=items`, { headers: { Authorization: `Bearer ${cash}` } })).text();
+    assert.ok(csvItems.includes('سعر الوحدة'), 'التصدير التفصيلي بالأصناف');
+
     // سجل التدقيق
     const logs = (await call('GET', '/api/audit-logs', { token: mgr })).data;
     assert.ok(logs.some((l) => /إلغاء/.test(l.description)) && logs.some((l) => /دفع طلب/.test(l.description)));
+    assert.ok(logs.some((l) => /تصدير \d+ فاتورة/.test(l.description)), 'التصدير مسجّل في التدقيق');
 
     console.log('✅ كل الاختبارات نجحت');
   } catch (e) {

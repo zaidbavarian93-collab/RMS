@@ -27,6 +27,14 @@ async function resolveTable(token) {
   return table;
 }
 
+// هوية المطعم لشاشة الدخول وما قبلها (الاسم والشعار فقط): الفرع المحدد بـ slug أو أول فرع نشط
+router.get('/branding', async (req, res) => {
+  const where = { is_active: true };
+  if (req.query.slug) where.slug = String(req.query.slug);
+  const r = await Restaurant.findOne({ where, order: [['created_at', 'ASC']], attributes: ['name', 'logo_path', 'slug'] });
+  res.json(r ? { name: r.name, logo_path: r.logo_path, slug: r.slug } : { name: null, logo_path: null });
+});
+
 // المنيو العام: التصنيفات النشطة والأصناف النشطة فقط (بدون وصفات أو تكاليف)
 router.get('/menu/:slug', async (req, res) => {
   const restaurant = await Restaurant.findOne({ where: { slug: req.params.slug, is_active: true } });
@@ -42,7 +50,7 @@ router.get('/menu/:slug', async (req, res) => {
     if (tb && tb.restaurant_id === restaurant.id) table = { number: tb.number };
   }
   res.json({
-    restaurant: { name: restaurant.name, currency: restaurant.currency, phone: restaurant.phone, qr_ordering_enabled: restaurant.qr_ordering_enabled },
+    restaurant: { name: restaurant.name, logo_path: restaurant.logo_path, currency: restaurant.currency, phone: restaurant.phone, qr_ordering_enabled: restaurant.qr_ordering_enabled },
     table,
     categories: categories.filter((c) => c.MenuItems.length),
   });

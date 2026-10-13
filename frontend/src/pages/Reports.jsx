@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client';
+import CountUp from '../components/CountUp';
 import { METHOD, ORDER_TYPE, money } from '../utils/format';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -30,12 +31,12 @@ export default function Reports() {
       {d && (
         <>
           <div className="stats">
-            <div className="stat"><span>المبيعات</span><b>{money(d.sales)}</b></div>
-            <div className="stat"><span>عدد الفواتير</span><b>{d.orders}</b></div>
-            <div className="stat"><span>متوسط الفاتورة</span><b>{money(d.avg_ticket)}</b></div>
-            <div className="stat"><span>الخصومات</span><b>{money(d.discounts)}</b></div>
-            <div className="stat"><span>أصناف ملغاة</span><b>{d.cancelled_items}</b></div>
-            <div className="stat"><span>عدد الضيوف</span><b>{d.guests}</b></div>
+            <div className="stat"><span>المبيعات</span><b><CountUp value={d.sales} /></b></div>
+            <div className="stat"><span>عدد الفواتير</span><b><CountUp value={d.orders} /></b></div>
+            <div className="stat"><span>متوسط الفاتورة</span><b><CountUp value={d.avg_ticket} /></b></div>
+            <div className="stat"><span>الخصومات</span><b><CountUp value={d.discounts} /></b></div>
+            <div className="stat"><span>أصناف ملغاة</span><b><CountUp value={d.cancelled_items} /></b></div>
+            <div className="stat"><span>عدد الضيوف</span><b><CountUp value={d.guests} /></b></div>
           </div>
           <div className="two-col">
             <div className="card"><h4>الأكثر مبيعًا</h4><Bars rows={d.top_items} label={(r) => r.name} value={(r) => r.quantity} /></div>

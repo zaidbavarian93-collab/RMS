@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إعداد الجهاز — RMS</title>
+<style>
+  :root { color-scheme: light dark; --a: #ff9500; --t: #1d1d1f; --t2: #6e6e73; --card: rgba(255,255,255,.72); --edge: rgba(255,255,255,.8); }
+  @media (prefers-color-scheme: dark) { :root { --t: #f5f5f7; --t2: #a1a1a6; --card: rgba(40,36,44,.7); --edge: rgba(255,255,255,.12); } }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; font-family: "Times New Roman", Times, serif; color: var(--t);
+    background: radial-gradient(40vmax 40vmax at 15% 20%, #ffb36b, transparent 60%), radial-gradient(40vmax 40vmax at 85% 15%, #ff7aa2, transparent 60%),
+      radial-gradient(45vmax 45vmax at 70% 85%, #b69cff, transparent 60%), radial-gradient(40vmax 40vmax at 20% 90%, #6fe0c8, transparent 60%), #f4ece6;
+    display: grid; place-items: center; padding: 18px; }
+  @media (prefers-color-scheme: dark) { body { background-color: #120d14; } }
+  main { width: min(640px, 100%); background: var(--card); border: 1px solid var(--edge); border-radius: 22px; padding: 26px;
+    backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); box-shadow: 0 30px 80px rgba(0,0,0,.18); }
+  h1 { margin: 0 0 4px; font-size: 26px; } p { line-height: 1.6; } .muted { color: var(--t2); }
+  .logo { font-size: 46px; }
+  .btn { display: inline-block; padding: 11px 18px; border-radius: 12px; color: #fff; text-decoration: none; font-weight: 700;
+    background: linear-gradient(180deg, #ffb340, #ff7a00); box-shadow: 0 6px 18px rgba(255,122,0,.35); margin: 4px 0 4px 8px; }
+  .btn.secondary { background: rgba(127,127,127,.18); color: var(--t); box-shadow: none; }
+  details { border-top: 1px solid rgba(127,127,127,.25); padding: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; font-size: 17px; }
+  ol { padding-inline-start: 22px; line-height: 1.8; margin: 8px 0; }
+  .status { padding: 10px 14px; border-radius: 12px; margin: 14px 0; background: rgba(255,149,0,.15); }
+  .status.ok { background: rgba(52,199,89,.18); }
+  code { background: rgba(127,127,127,.18); padding: 1px 6px; border-radius: 6px; direction: ltr; display: inline-block; }
+</style>
+</head>
+<body>
+<main>
+  <div class="logo">🍽️</div>
+  <h1>إعداد هذا الجهاز لنظام المطعم</h1>
+  <p class="muted">خطوة واحدة لكل جهاز (جوال، تابلت، كمبيوتر): تثبيت شهادة الأمان الخاصة بالمطعم، حتى يعمل النظام بأمان ويتحمّل انقطاع الشبكة ويمكن تثبيته كتطبيق.</p>
+
+  <div id="status" class="status">جارٍ فحص الاتصال الآمن…</div>
+
+  <p>
+    <a class="btn" href="/rms-ca.crt" download="RMS-Local-CA.crt">1) تنزيل شهادة المطعم</a>
+    <a class="btn secondary" id="open" href="#">2) فتح النظام</a>
+  </p>
+
+  <details open>
+    <summary>📱 أندرويد</summary>
+    <ol>
+      <li>نزّل الشهادة من الزر أعلاه.</li>
+      <li>الإعدادات ← الأمان والخصوصية ← إعدادات أمان أخرى ← <b>تثبيت من وحدة التخزين</b> ← <b>شهادة CA</b>.</li>
+      <li>اختر الملف <code>RMS-Local-CA.crt</code> وأكّد التثبيت.</li>
+      <li>افتح النظام في Chrome، ثم من القائمة ⋮ اختر <b>تثبيت التطبيق</b>.</li>
+    </ol>
+  </details>
+  <details>
+    <summary>🍎 iPhone / iPad</summary>
+    <ol>
+      <li>افتح هذه الصفحة في <b>Safari</b> ونزّل الشهادة، ثم اختر "سماح".</li>
+      <li>الإعدادات ← <b>تم تنزيل الملف الشخصي</b> ← تثبيت.</li>
+      <li>الإعدادات ← عام ← حول ← <b>إعدادات الثقة بالشهادات</b> ← فعّل الثقة الكاملة لـ "Caddy Local Authority".</li>
+      <li>افتح النظام في Safari ← مشاركة ← <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+    </ol>
+  </details>
+  <details>
+    <summary>🪟 ويندوز</summary>
+    <ol>
+      <li>نزّل الشهادة وافتحها ← <b>تثبيت الشهادة</b> ← الجهاز المحلي (Local Machine).</li>
+      <li>اختر "وضع كل الشهادات في المخزن التالي" ← <b>المراجع المصدقة الجذر الموثوقة</b> ← إنهاء.</li>
+      <li>أعد تشغيل المتصفح وافتح النظام، ثم زر <b>تثبيت</b> في شريط العنوان.</li>
+    </ol>
+  </details>
+  <details>
+    <summary>💻 ماك</summary>
+    <ol>
+      <li>نزّل الشهادة وافتحها لتُضاف إلى <b>Keychain Access</b> (سلسلة المفاتيح: System).</li>
+      <li>انقر عليها مرتين ← الثقة ← <b>الثقة دائمًا</b>.</li>
+    </ol>
+  </details>
+  <p class="muted">الشهادة خاصة بخادم هذا المطعم فقط، ولا تعمل إلا على شبكته. لا تثبّت شهادات من مصادر لا تعرفها.</p>
+</main>
+<script>
+  // إن كانت الشهادة مثبّتة مسبقًا ينجح الاتصال الآمن فنحوّل مباشرة إلى النظام
+  const https = 'https://' + location.host.replace(/:\d+$/, '') + '/';
+  document.getElementById('open').href = https;
+  const st = document.getElementById('status');
+  fetch(https + 'api/health', { cache: 'no-store' })
+    .then((r) => r.json())
+    .then(() => { st.className = 'status ok'; st.textContent = '✓ هذا الجهاز جاهز — جارٍ فتح النظام…'; setTimeout(() => { location.href = https; }, 1200); })
+    .catch(() => { st.textContent = 'هذا الجهاز لم يثبّت شهادة المطعم بعد. اتبع الخطوات حسب نوع جهازك ثم اضغط "فتح النظام".'; });
+</script>
+</body>
+</html>

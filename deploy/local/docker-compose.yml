@@ -1,0 +1,64 @@
+# الخادم المحلي للمطعم (بدون إنترنت) — قاعدة بيانات + النظام + Caddy (HTTPS)
+# التشغيل:  cp .env.example .env  ثم عدّل القيم  ثم:  docker compose up -d --build
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: restaurant_rms
+      POSTGRES_USER: rms
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?ضع DB_PASSWORD في ملف .env}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rms -d restaurant_rms"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  app:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: restaurant_rms
+      DB_USER: rms
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?ضع JWT_SECRET في ملف .env}
+      JWT_EXPIRES_IN: 12h
+    volumes:
+      - uploads:/app/uploads
+    # لا منفذ منشور: الوصول فقط عبر Caddy (HTTPS)
+
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      RMS_HOST: ${RMS_HOST:?ضع RMS_HOST (عنوان IP الثابت لهذا الجهاز) في ملف .env}
+      RMS_UPSTREAM: app:4000
+      RMS_CA_DIR: /data/caddy/pki/authorities/local
+      RMS_SETUP_DIR: /srv/setup
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./setup.html:/srv/setup/setup.html:ro
+      # مهم: يحفظ مرجع الشهادات؛ حذفه يعني إعادة تثبيت الشهادة على كل الأجهزة
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  db_data:
+  uploads:
+  caddy_data:
+  caddy_config:

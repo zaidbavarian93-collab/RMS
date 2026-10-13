@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- usesCleartextTraffic يسمح بـ http للاختبار على شبكة محلية؛ عند النشر يجب تشغيل الخادم على https -->
+    <!-- allowBackup معطّل حتى لا يُنسخ رمز الدخول المحفوظ ضمن نسخ الجهاز الاحتياطية -->
+    <application
+        android:name=".RmsApplication"
+        android:allowBackup="false"
+        android:usesCleartextTraffic="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
