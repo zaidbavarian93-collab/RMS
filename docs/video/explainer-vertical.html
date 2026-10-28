@@ -94,7 +94,7 @@ svg { overflow: visible; }
 </style>
 </head>
 <body>
-<script src="timing.js"></script>
+<script>{ const c = new URLSearchParams(location.search).get('cut'); document.write(`<script src="timing${c ? '-' + c : ''}.js"><\/script>`); }</script>
 <div id="bg"><div id="grid"></div><div id="floor"></div><canvas id="sky" width="1080" height="1920"></canvas><img id="mark" src="assets/img/logo-mark.png"></div>
 <div id="stage"></div>
 <div id="fx"><div id="beam"></div></div>
@@ -151,11 +151,14 @@ const stage = document.getElementById('stage');
 const scenes = [];
 const ROWS = window.TIMING.rows;
 const BASE = [6.4, 7.6, 10, 9.6, 10, 9.4, 8.8, 10.4, 8.8, 8.8, 10, 5.6, 9.6];
+let built = 0; // رقم المشهد التالي في الترتيب الكامل؛ النسخ المختصرة تتخطى ما ليس في ROWS
 function scene(build) {
-  const i = scenes.length, { start, dur } = ROWS[i];
+  const n = built++, row = ROWS.find((r) => (r.scene ?? n) === n);
+  if (!row) return;
+  const { start, dur } = row;
   const root = h('<div class="scene"></div>');
   stage.appendChild(root);
-  const base = BASE[i];
+  const base = BASE[n];
   const update = build(root, base);
   scenes.push({ start, dur, root, update, k: base / dur });
 }
@@ -416,8 +419,9 @@ const bg = document.getElementById('bg'), grid = document.getElementById('grid')
 const clock = document.getElementById('clock'), prog = document.getElementById('prog'), hud = document.getElementById('hud');
 const mark = document.getElementById('mark'), beam = document.getElementById('beam'), fx = document.getElementById('fx');
 // المشاهد التي تظهر فيها أرضية الشبكة ثلاثية الأبعاد: الافتتاح، رحلة الطلب، التقارير، والقوس حتى الختام
-const span = (a, b) => [ROWS[a].start, ROWS[b].start + ROWS[b].dur];
-const FLOOR = [span(0, 0), span(3, 3), span(9, 9), span(11, 12)];
+const rowOf = (n) => ROWS.find((r) => (r.scene ?? ROWS.indexOf(r)) === n);
+const span = (a, b) => (rowOf(a) && rowOf(b) ? [rowOf(a).start, rowOf(b).start + rowOf(b).dur] : null);
+const FLOOR = [span(0, 0), span(3, 3), span(9, 9), span(11, 12), span(12, 12)].filter(Boolean);
 
 // مولّد أرقام عشوائية ثابت البذرة كي يتطابق كل تصيير
 const rnd = ((a) => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(20261014);

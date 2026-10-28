@@ -4,7 +4,9 @@
 
 التعليق مسجّل بصوت ElevenLabs ‏(Rawi — فصحى، نموذج eleven_multilingual_v2) في `docs/video/voice/NN.mp3`. مدة كل مشهد = طول جملته + نحو 0.8 ثانية، ويحسبها `python3 docs/video/mix.py --timing` في `timing.json`/`timing.js` التي تقرؤها `explainer.html` و`music.py`. كُتبت "RMS" و"QR" و"PDF" عند التوليد "آر إم إس" و"كيو آر" و"بي دي إف" لضبط النطق.
 
-البناء الكامل: `sh docs/video/build.sh` (يحتاج python3 مع numpy، وffmpeg، وNode مع Playwright).
+النسخ: أفقية 1920×1080 (`RMS-by-Starlight-explainer.mp4`)، وعمودية لإنستغرام 1080×1920 (`RMS-by-Starlight-explainer-vertical.mp4`)، ونسخة ريلز مختصرة عمودية (`RMS-by-Starlight-reels.mp4`).
+
+البناء الكامل للنسخ الثلاث: `sh docs/video/build.sh` (يحتاج python3 مع numpy، وffmpeg، وNode مع Playwright).
 
 | الوقت | المشهد | التعليق | الملف |
 |---|---|---|---|
@@ -25,3 +27,19 @@
 ## المقطعان 05 و08
 
 رفضت ElevenLabs توليدهما مباشرةً أول مرة ("Unusual activity… Free Tier access has been disabled")، فوُلِّدا لاحقًا عبر Speko موجَّهًا إلى ElevenLabs بالصوت نفسه (Rawi) والنموذج نفسه، ثم حُوِّلا إلى MP3. إن غاب أي مقطع، يعامله `mix.py` كصمت بطولٍ تقديري حتى يُضاف.
+
+## نسخة الريلز المختصرة (1:26)
+
+تسعة مشاهد من الثلاثة عشر بالتعليق نفسه (`mix.py --cut reels`)، وحُذفت مشاهد المشكلة ورحلة الطلب والصلاحيات والتوسع. التوقيت في `video/timing-reels.json`.
+
+| الوقت | المشهد | الملف |
+|---|---|---|
+| 0:00 – 0:05 | الافتتاح | 01 |
+| 0:04 – 0:11 | الشعار | 02 |
+| 0:11 – 0:24 | الكابتن | 05 |
+| 0:23 – 0:34 | المطبخ | 06 |
+| 0:33 – 0:43 | منيو QR | 07 |
+| 0:42 – 0:58 | الكاشير والفواتير | 08 |
+| 0:57 – 1:07 | المخزون | 09 |
+| 1:06 – 1:16 | التقارير | 10 |
+| 1:15 – 1:26 | الختام | 13 |

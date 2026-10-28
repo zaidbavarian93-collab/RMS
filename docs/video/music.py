@@ -1,11 +1,13 @@
 # موسيقى خلفية هادئة مولّدة برمجيًا: وسادة أوتار + نبض خفيف + رنين نجمي ناعم عند كل انتقال مشهد
+import sys
 import wave
 import json
 from pathlib import Path
 import numpy as np
 
 SR = 44100
-TIMING = json.loads((Path(__file__).parent / "timing.json").read_text())  # من mix.py --timing
+SUF = '-' + sys.argv[sys.argv.index('--cut') + 1] if '--cut' in sys.argv else ''
+TIMING = json.loads((Path(__file__).parent / f"timing{SUF}.json").read_text())  # من mix.py --timing
 TOTAL = TIMING["total"]
 # بدايات المشاهد 2–13 (من timing.json، مطابقة لـ explainer.html)
 CUTS = [r["start"] for r in TIMING["rows"][1:]]
@@ -62,7 +64,7 @@ fade = np.clip(t / 1.5, 0, 1) * np.clip((TOTAL - t) / 3.0, 0, 1)
 mix *= fade
 mix /= np.max(np.abs(mix)) * 1.15
 stereo = np.stack([mix, np.roll(mix, int(0.012 * SR))], axis=1)
-with wave.open(str(Path(__file__).parent / 'music.wav'), 'wb') as w:
+with wave.open(str(Path(__file__).parent / f'music{SUF}.wav'), 'wb') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((stereo * 32767).astype(np.int16).tobytes())
 print('ok')

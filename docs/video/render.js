@@ -4,10 +4,12 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 // --vertical: النسخة العمودية 1080×1920 (إنستغرام) من explainer-vertical.html
-const vertical = process.argv.includes('--vertical');
-const args = process.argv.slice(2).filter((a) => a !== '--vertical');
+// --reels: النسخة العمودية المختصرة (~86 ثانية) بتوقيت timing-reels.js
+const reels = process.argv.includes('--reels');
+const vertical = reels || process.argv.includes('--vertical');
+const args = process.argv.slice(2).filter((a) => a !== '--vertical' && a !== '--reels');
 const FPS = 30;
-const html = 'file://' + path.join(__dirname, vertical ? 'explainer-vertical.html' : 'explainer.html');
+const html = 'file://' + path.join(__dirname, vertical ? 'explainer-vertical.html' : 'explainer.html') + (reels ? '?cut=reels' : '');
 const viewport = vertical ? { width: 1080, height: 1920 } : { width: 1920, height: 1080 };
 
 (async () => {
@@ -20,7 +22,7 @@ const viewport = vertical ? { width: 1080, height: 1920 } : { width: 1920, heigh
   if (args[0] === '--stills') {
     for (const t of args.slice(1).map(Number)) {
       await page.evaluate((t) => window.seek(t), t);
-      await page.screenshot({ path: path.join(__dirname, 'stills', `${vertical ? 'v' : 's'}${String(t).padStart(5, '0')}.jpg`), type: 'jpeg', quality: 80 });
+      await page.screenshot({ path: path.join(__dirname, 'stills', `${reels ? 'r' : vertical ? 'v' : 's'}${String(t).padStart(5, '0')}.jpg`), type: 'jpeg', quality: 80 });
     }
     await browser.close();
     return;
