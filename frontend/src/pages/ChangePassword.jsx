@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { errMsg } from '../api/client';
+import { useBrand } from '../context/BrandContext';
+import BrandMark from '../components/BrandMark';
 
 export default function ChangePassword({ forced }) {
   const { changePassword, logout } = useAuth();
+  const brand = useBrand();
   const [form, setForm] = useState({ current: '', next: '', confirm: '' });
   const [error, setError] = useState('');
 
@@ -16,6 +19,7 @@ export default function ChangePassword({ forced }) {
   return (
     <div className="login-page">
       <div className="login-box">
+        <div className="login-brand"><BrandMark logo={brand.logo} size={56} /><h1>{brand.name}</h1></div>
         <h2 style={{ marginTop: 0 }}>{forced ? 'يجب تغيير كلمة المرور' : 'تغيير كلمة المرور'}</h2>
         <form onSubmit={submit}>
           {error && <div className="error">{error}</div>}

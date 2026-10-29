@@ -2,11 +2,12 @@ const express = require('express');
 const { Op } = require('sequelize');
 const { sequelize, Order, OrderItem, DiningTable, Payment, PAYMENT_METHODS, ORDER_TYPES } = require('../models');
 const { authenticate, authorize, scopeRestaurant } = require('../middleware/auth');
+const { idempotency } = require('../middleware/idempotency');
 const { logAudit } = require('../services/auditLog');
 const S = require('../services/orderService');
 
 const router = express.Router();
-router.use(authenticate, authorize('owner', 'manager', 'cashier', 'captain'));
+router.use(authenticate, authorize('owner', 'manager', 'cashier', 'captain'), idempotency);
 const MANAGERS = ['owner', 'manager'];
 
 async function findOrder(req, t) {

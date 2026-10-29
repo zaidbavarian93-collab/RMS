@@ -1,0 +1,13 @@
+{
+  "name": "rms",
+  "private": true,
+  "description": "نظام إدارة المطاعم — أوامر التشغيل من جذر المشروع",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "build": "npm --prefix frontend run build",
+    "seed": "npm --prefix backend run seed",
+    "start": "npm --prefix backend start",
+    "local": "npm run build && npm start",
+    "test": "npm --prefix backend test"
+  }
+}

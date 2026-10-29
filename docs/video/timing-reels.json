@@ -1,0 +1,60 @@
+{
+ "rows": [
+  {
+   "scene": 0,
+   "start": 0.0,
+   "dur": 5.38,
+   "voice": 0.6
+  },
+  {
+   "scene": 1,
+   "start": 4.58,
+   "dur": 7.38,
+   "voice": 5.13
+  },
+  {
+   "scene": 4,
+   "start": 11.16,
+   "dur": 13.53,
+   "voice": 11.71
+  },
+  {
+   "scene": 5,
+   "start": 23.89,
+   "dur": 10.77,
+   "voice": 24.44
+  },
+  {
+   "scene": 6,
+   "start": 33.86,
+   "dur": 9.82,
+   "voice": 34.41
+  },
+  {
+   "scene": 7,
+   "start": 42.88,
+   "dur": 15.5,
+   "voice": 43.43
+  },
+  {
+   "scene": 8,
+   "start": 57.57,
+   "dur": 9.7,
+   "voice": 58.12
+  },
+  {
+   "scene": 9,
+   "start": 66.47,
+   "dur": 9.84,
+   "voice": 67.02
+  },
+  {
+   "scene": 12,
+   "start": 75.51,
+   "dur": 10.88,
+   "voice": 76.06
+  }
+ ],
+ "total": 86.39,
+ "over": 0.8
+}

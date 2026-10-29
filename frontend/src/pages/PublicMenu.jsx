@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { ITEM_STATUS, itemPrice, money } from '../utils/format';
+import BrandMark from '../components/BrandMark';
 
 // المنيو العام للزبون (بدون تسجيل دخول): يُفتح من QR على الطاولة. الطلب يصل الكابتن للموافقة قبل المطبخ.
 export default function PublicMenu() {
@@ -18,7 +19,7 @@ export default function PublicMenu() {
 
   useEffect(() => {
     axios.get(`/api/public/menu/${slug}`, { params: { t: token } })
-      .then((r) => { setData(r.data); setCat(r.data.categories[0]?.id); })
+      .then((r) => { setData(r.data); setCat(r.data.categories[0]?.id); document.title = r.data.restaurant.name; })
       .catch(() => setErr('المطعم غير موجود'));
   }, [slug, token]);
 
@@ -51,7 +52,7 @@ export default function PublicMenu() {
   return (
     <div className="pub">
       <header className="pub-head">
-        <h1>🍽️ {data.restaurant.name}</h1>
+        <div className="pub-brand"><BrandMark logo={data.restaurant.logo_path} size={52} /><h1>{data.restaurant.name}</h1></div>
         {data.table && <div className="badge info">طاولة {data.table.number}</div>}
       </header>
       {msg && <div className="alert" onClick={() => setMsg('')}>{msg}</div>}

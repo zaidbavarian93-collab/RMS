@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import api, { errMsg } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { ITEM_STATUS, itemPrice, money, timeAgo, usePoll } from '../utils/format';
+import { enqueueOrder, isNetworkError, useOnline, useQueue } from '../utils/offline';
 
 // شاشة طلب الطاولة: الطلب الحالي + إضافة أصناف من المنيو + إرسال للمطبخ + الفاتورة (مشتركة بين الكابتن والكاشير)
 export default function OrderPanel({ table, tables = [], onClose, onChanged, toast }) {
@@ -16,6 +17,9 @@ export default function OrderPanel({ table, tables = [], onClose, onChanged, toa
   const [picking, setPicking] = useState(null); // صنف له خيارات
   const [busy, setBusy] = useState(false);
   const [transferTo, setTransferTo] = useState('');
+
+  const online = useOnline();
+  const queued = useQueue().filter((q) => q.table_id === table.id);
 
   const loadOrder = useCallback(async () => {
     const { data } = await api.get('/orders', { params: { table_id: table.id, status: 'open,billing' } });
@@ -49,11 +53,32 @@ export default function OrderPanel({ table, tables = [], onClose, onChanged, toa
     setBusy(true);
     try { await fn(); if (okMsg) toast(okMsg); await loadOrder(); onChanged?.(); } catch (e) { toast(errMsg(e), 'err'); } finally { setBusy(false); }
   }
-  const sendCart = () => run(async () => {
-    const { data } = await api.post('/orders', { type: 'dine_in', table_id: table.id, guests, items: cart.map((c) => ({ menu_item_id: c.menu_item_id, quantity: c.quantity, options: c.options.map((o) => o.name), notes: c.notes })) });
-    await api.post(`/orders/${data.id}/send`);
+  const cartPayload = () => cart.map((c) => ({ menu_item_id: c.menu_item_id, quantity: c.quantity, options: c.options.map((o) => o.name), notes: c.notes }));
+  // بدون اتصال: يُحفظ الطلب على الجهاز ويُرسل تلقائيًا عند عودة الشبكة (مع منع التكرار على الخادم)
+  function queueCart() {
+    enqueueOrder({
+      table_id: table.id, table_number: table.number, guests, items: cartPayload(),
+      lines: cart.map((c) => ({ name: c.name, quantity: c.quantity, options: c.options.map((o) => o.name), notes: c.notes, total: itemPrice(c) })),
+    });
     setCart([]);
-  }, 'تم إرسال الطلب للمطبخ');
+    toast('لا يوجد اتصال — حُفظ الطلب على الجهاز وسيُرسل للمطبخ تلقائيًا عند عودة الاتصال', 'warn');
+  }
+  async function sendCart() {
+    if (!navigator.onLine) return queueCart();
+    setBusy(true);
+    try {
+      const { data } = await api.post('/orders', { type: 'dine_in', table_id: table.id, guests, items: cartPayload() });
+      await api.post(`/orders/${data.id}/send`);
+      setCart([]);
+      toast('تم إرسال الطلب للمطبخ');
+      await loadOrder();
+      onChanged?.();
+    } catch (e) {
+      if (isNetworkError(e)) queueCart(); else toast(errMsg(e), 'err');
+    } finally {
+      setBusy(false);
+    }
+  }
   const cancelItem = (i) => {
     const needsReason = !['draft', 'awaiting_approval'].includes(i.status);
     const reason = needsReason ? window.prompt(`سبب إلغاء "${i.name}"؟`) : '';
@@ -91,7 +116,21 @@ export default function OrderPanel({ table, tables = [], onClose, onChanged, toa
       <div className="order-grid">
         <section className="card">
           <h4>الطلب الحالي</h4>
-          {!loaded ? <p className="muted">...</p> : !live.length ? <p className="muted">لا توجد أصناف بعد</p> : (
+          {queued.length > 0 && (
+            <div className="alert warn queued">
+              <b>⏳ بانتظار الاتصال ({queued.length})</b>
+              <ul className="lines">
+                {queued.flatMap((q) => q.lines.map((l, idx) => (
+                  <li key={q.id + idx} className="line st-queued">
+                    <div className="line-main"><b>{l.quantity}× {l.name}</b>{l.options.length > 0 && <small> ({l.options.join('، ')})</small>}{l.notes && <small className="muted"> — {l.notes}</small>}</div>
+                    <span>{money(l.total)}</span>
+                  </li>
+                )))}
+              </ul>
+              <small>سيُرسل للمطبخ تلقائيًا فور عودة الاتصال</small>
+            </div>
+          )}
+          {!loaded ? <p className="muted">...</p> : !live.length ? (!queued.length && <p className="muted">لا توجد أصناف بعد</p>) : (
             <>
               {awaiting.length > 0 && <div className="alert warn">📱 {awaiting.length} صنف من الزبون بانتظار موافقتك</div>}
               <ul className="lines">
@@ -166,7 +205,7 @@ export default function OrderPanel({ table, tables = [], onClose, onChanged, toa
           </div>
           <div className="cart-send">
             {!order && <label className="inline">ضيوف <input type="number" min="1" value={guests} onChange={(e) => setGuests(Number(e.target.value) || 1)} style={{ width: 70 }} /></label>}
-            <button className="btn" disabled={busy} onClick={sendCart}>📤 إرسال للمطبخ ({money(cartTotal)})</button>
+            <button className="btn" disabled={busy} onClick={sendCart}>{online ? '📤 إرسال للمطبخ' : '💾 حفظ وإرسال لاحقًا'} ({money(cartTotal)})</button>
             <button className="btn secondary" onClick={() => setCart([])}>تفريغ</button>
           </div>
         </div>

@@ -8,6 +8,8 @@ Restaurant.init(
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
     name: { type: DataTypes.STRING, allowNull: false },
     slug: { type: DataTypes.STRING, allowNull: false, unique: true }, // يُستخدم في رابط المنيو العام /m/:slug
+    // الهوية: الاسم أعلاه + الشعار (يظهر في الواجهة وشاشة الدخول والمنيو العام والفاتورة وبطاقات QR)
+    logo_path: { type: DataTypes.STRING },
     phone: { type: DataTypes.STRING },
     address: { type: DataTypes.STRING },
     currency: { type: DataTypes.STRING, allowNull: false, defaultValue: 'IQD' },
@@ -16,6 +18,11 @@ Restaurant.init(
     // السماح للزبون بالطلب من المنيو عبر QR (تظهر الطلبات للكابتن للموافقة)
     qr_ordering_enabled: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
     is_active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    // إعدادات الفاتورة: الرقم الضريبي، ملاحظة أسفل الفاتورة، عرض ورق الإيصال الحراري، والطباعة التلقائية بعد الدفع
+    tax_number: { type: DataTypes.STRING(40) },
+    invoice_footer: { type: DataTypes.STRING(300) },
+    receipt_width: { type: DataTypes.STRING(4), allowNull: false, defaultValue: '80' },
+    auto_print: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
   },
   { sequelize, modelName: 'Restaurant', tableName: 'restaurants' }
 );
